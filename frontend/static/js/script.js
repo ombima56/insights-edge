@@ -21,31 +21,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  const form = document.getElementById('waitlistForm');
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = form.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      submitBtn.classList.add('loading');
+  document.addEventListener("DOMContentLoaded", function () {
+    const waitlistForm = document.getElementById("waitlistForm");
 
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        showNotification('Successfully joined the waitlist!', 'success');
-        form.reset();
-        setTimeout(() => {
-          modal.classList.remove('modal-active');
-          modal.style.display = 'none';
-          document.body.style.overflow = 'auto';
-        }, 1000);
-      } catch (error) {
-        showNotification('Something went wrong. Please try again.', 'error');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
-      }
+    waitlistForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const formData = {
+            wallet_address: "0x1234ABCD",  // Replace with actual wallet input
+            email: document.getElementById("email").value,
+            username: document.getElementById("name").value,
+            company: document.getElementById("company").value,
+            businessSize: document.getElementById("businessSize").value
+        };
+
+        console.log("Sending data:", formData);
+
+        try {
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            console.log("Server Response:", data);
+            alert(data.message);
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        }
     });
-  }
+});
 
   function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
