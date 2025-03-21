@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Check if user is logged in
   const token = localStorage.getItem('token');
   if (!token) {
-    window.location.href = '/login';
+    // window.location.href = '/dashboard';
     return;
   }
 
@@ -75,7 +75,7 @@ function setupEventListeners() {
   // Logout button
   document.getElementById('logout-btn').addEventListener('click', function() {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/';
   });
   
   // Register business form
@@ -779,8 +779,6 @@ async function updatePasswordSettings() {
 
 // View insight details
 function viewInsightDetails(insightId) {
-  // This would open a modal with insight details
-  // For simplicity, we'll just redirect to the insight page
   window.location.href = `/insight/${insightId}`;
 }
 

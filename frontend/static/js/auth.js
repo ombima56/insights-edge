@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Redirect to dashboard after successful login
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = '/dashboard';
       }, 1500);
       
     } catch (error) {
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Redirect to dashboard after successful signup
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = '/dashboard';
       }, 1500);
       
     } catch (error) {

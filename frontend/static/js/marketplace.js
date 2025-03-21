@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Check if user is logged in
   const token = localStorage.getItem('token');
   if (!token) {
-    window.location.href = '/login';
+    // window.location.href = '/dashboard';
     return;
   }
 
