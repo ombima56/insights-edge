@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap");
 
 :root {
   --primary: #6366f1;
@@ -21,12 +21,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'League Spartan', sans-serif;
-}
-
-.dark-theme {
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
+  font-family: "League Spartan", sans-serif;
 }
 
 html,
@@ -38,6 +33,14 @@ body {
   line-height: 1.5;
   color: var(--text-primary);
   background: var(--bg-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-theme {
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
 }
 
 .container {
@@ -93,7 +96,7 @@ nav {
 }
 
 .nav-links a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -125,11 +128,11 @@ nav {
 }
 
 body.dark-theme .fa-sun {
-    display: flex;
+  display: flex;
 }
 
 body.dark-theme .fa-moon {
-    display: none;
+  display: none;
 }
 
 /* Hero Section */
@@ -141,7 +144,7 @@ body.dark-theme .fa-moon {
 }
 
 .hero::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   right: -50%;
@@ -210,7 +213,7 @@ h1 {
 }
 
 .btn-primary::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -277,7 +280,6 @@ h1 {
 .feature-card,
 .challenge-card,
 .benefit-card {
-  background: white;
   padding: 2.5rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-md);
@@ -287,8 +289,21 @@ h1 {
   overflow: hidden;
 }
 
+.feature-card,
+.challenge-card,
+.benefit-card {
+  background: var(--bg-primary);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .feature-card,
+body.dark-theme .challenge-card,
+body.dark-theme .benefit-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .feature-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -365,13 +380,17 @@ h1 {
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-primary);
   padding: 3rem;
   border-radius: var(--border-radius);
   max-width: 550px;
   width: 90%;
   position: relative;
   box-shadow: var(--shadow-lg);
+}
+
+body.dark-theme .modal-content {
+  background: var(--bg-secondary);
 }
 
 .modal-close {
@@ -411,6 +430,10 @@ h1 {
 footer {
   background: var(--bg-secondary);
   padding: 4rem 0 2rem;
+}
+
+body.dark-theme .footer {
+  background: var(--bg-primary);
 }
 
 .footer-content {
@@ -711,11 +734,7 @@ body.dark-theme .btn-secondary:hover {
 }
 
 .gradient-text {
-  background: linear-gradient(
-    135deg,
-    var(--secondary) 0%,
-    var(--primary) 100%
-  );
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
