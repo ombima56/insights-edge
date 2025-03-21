@@ -25,7 +25,9 @@
           <a href="#features">Features</a>
           <a href="#process">Process</a>
           <a href="#benefits">Benefits</a>
-          <a href="/auth" class="auth-link"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+          <a href="/auth" class="auth-link"
+            ><i class="fas fa-sign-in-alt"></i> Sign In</a
+          >
         </div>
         <div class="theme-toggler">
           <i class="fa-solid fa-moon"></i>
@@ -38,36 +40,42 @@
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <h1>
-            Transform Your Business Using
-            <span class="gradient-text">Blockchain-Powered Analytics</span>
-          </h1>
+          <div class="left">
+            <h1>
+              Transform Your Business Using
+              <span class="gradient-text">Blockchain-Powered Analytics</span>
+            </h1>
 
-          <p class="hero-subtitle">
-            Identifying Opportunities, Analyzing Trends, and Launching Ventures
-          </p>
-          <div class="hero-cta">
-            <button class="btn btn-primary" id="openWaitlist">
-              Join Waitlist
-              <i class="fas fa-arrow-right"></i>
-            </button>
-            <!-- <button class="btn btn-secondary">
-              Watch Demo
-              <i class="fas fa-play"></i>
-            </button> -->
+            <p class="hero-subtitle">
+              Identifying Opportunities, Analyzing Trends, and Launching
+              Ventures
+            </p>
           </div>
-          <div class="hero-stats">
-            <div class="stat">
-              <span class="stat-number" data-value="15">0</span>
-              <span class="stat-label">Businesses Onboard</span>
+
+          <div class="right">
+            <div class="hero-cta">
+              <button class="btn btn-primary" id="openWaitlist">
+                Join Waitlist
+                <i class="fas fa-arrow-right"></i>
+              </button>
+              <!-- <button class="btn btn-secondary">
+                Watch Demo
+                <i class="fas fa-play"></i>
+              </button> -->
             </div>
-            <div class="stat">
-              <span class="stat-number" data-value="98">0</span>
-              <span class="stat-label">Success Rate</span>
-            </div>
-            <div class="stat">
-              <span class="stat-number" data-value="24">0</span>
-              <span class="stat-label">Support Hours</span>
+            <div class="hero-stats">
+              <div class="stat">
+                <span class="stat-number" data-value="15">0</span>
+                <span class="stat-label">Businesses Onboard</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number" data-value="98">0</span>
+                <span class="stat-label">Success Rate</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number" data-value="24">0</span>
+                <span class="stat-label">Support Hours</span>
+              </div>
             </div>
           </div>
         </div>
@@ -218,13 +226,31 @@
         </div>
         <form id="waitlistForm" class="waitlist-form">
           <div class="form-group">
-            <input type="text" id="name" name="name" required placeholder="Full Name" />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              placeholder="Full Name"
+            />
           </div>
           <div class="form-group">
-            <input type="email" id="email" name="email" required placeholder="Business Email" />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="Business Email"
+            />
           </div>
           <div class="form-group">
-            <input type="text" id="company" name="company" required placeholder="Company Name" />
+            <input
+              type="text"
+              id="company"
+              name="company"
+              required
+              placeholder="Company Name"
+            />
           </div>
           <div class="form-group">
             <select id="businessSize" name="businessSize" required>
