@@ -23,13 +23,38 @@ func main() {
 	// Setup static file server
 	handlers.SetupStaticFileServer()
 
-	// Register HTTP handlers
+	// Register HTTP handlers for pages
 	http.HandleFunc("/", handlers.HomeHandler)
 	http.HandleFunc("/auth", handlers.AuthHandler)
+	http.HandleFunc("/dashboard", handlers.DashboardHandler)
+	http.HandleFunc("/marketplace", handlers.MarketplaceHandler)
+	http.HandleFunc("/insight/", handlers.InsightDetailHandler)
+
+	// User API endpoints
 	http.HandleFunc("/api/signup", handlers.SignupHandler)
 	http.HandleFunc("/api/login", handlers.LoginHandler)
-	http.HandleFunc("/api/profile", handlers.GetUserProfileHandler)
+	http.HandleFunc("/api/user/profile", handlers.GetUserProfileHandler)
+	http.HandleFunc("/api/user/password", handlers.UpdatePasswordHandler)
 	http.HandleFunc("/api/users", handlers.GetUsersHandler)
+
+	// Business API endpoints
+	http.HandleFunc("/api/business/register", handlers.RegisterBusinessHandler)
+	http.HandleFunc("/api/business/profile", handlers.GetBusinessProfileHandler)
+	http.HandleFunc("/api/business/all", handlers.GetAllBusinessesHandler)
+	http.HandleFunc("/api/business/subscription", handlers.GetBusinessSubscriptionHandler)
+	http.HandleFunc("/api/business/subscription/purchase", handlers.PurchaseSubscriptionHandler)
+
+	// Insight API endpoints
+	http.HandleFunc("/api/insights", handlers.GetInsightsHandler)
+	http.HandleFunc("/api/insights/list", handlers.ListInsightHandler)
+	http.HandleFunc("/api/insights/purchased", handlers.GetPurchasedInsightsHandler)
+	http.HandleFunc("/api/insights/", handlers.GetInsightByIDHandler)
+	http.HandleFunc("/api/insights/purchase", handlers.PurchaseInsightHandler)
+	http.HandleFunc("/api/insights/feedback", handlers.SubmitFeedbackHandler)
+
+	// Transaction API endpoints
+	http.HandleFunc("/api/transactions", handlers.GetTransactionsHandler)
+	http.HandleFunc("/api/dashboard/stats", handlers.GetDashboardStatsHandler)
 
 	// Start the server
 	log.Println("Server started on http://localhost:8080")
