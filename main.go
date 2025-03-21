@@ -25,8 +25,11 @@ func main() {
 
 	// Register HTTP handlers
 	http.HandleFunc("/", handlers.HomeHandler)
-	http.HandleFunc("/signup", handlers.SignupHandler)
-	http.HandleFunc("/users", handlers.GetUsersHandler)
+	http.HandleFunc("/auth", handlers.AuthHandler)
+	http.HandleFunc("/api/signup", handlers.SignupHandler)
+	http.HandleFunc("/api/login", handlers.LoginHandler)
+	http.HandleFunc("/api/profile", handlers.GetUserProfileHandler)
+	http.HandleFunc("/api/users", handlers.GetUsersHandler)
 
 	// Start the server
 	log.Println("Server started on http://localhost:8080")
