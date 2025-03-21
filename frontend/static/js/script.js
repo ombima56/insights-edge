@@ -216,23 +216,23 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".stat-number").forEach((stat) => {
     statsObserver.observe(stat);
   });
-});
 
-// Theme toggler functionality
-const themeToggler = document.querySelector(".theme-toggler");
-const body = document.body;
+  // Theme toggler functionality
+  const themeToggler = document.querySelector(".theme-toggler");
+  const body = document.body;
 
-// Check for saved user preference, if any, on load of the website
-const currentTheme = localStorage.getItem("theme");
-if (currentTheme) {
-  body.classList.add(currentTheme);
-}
-
-themeToggler.addEventListener("click", () => {
-  body.classList.toggle("dark-theme");
-  if (body.classList.contains("dark-theme")) {
-    localStorage.setItem("theme", "dark-theme");
-  } else {
-    localStorage.removeItem("theme");
+  // Check for saved user preference, if any, on load of the website
+  const currentTheme = localStorage.getItem("theme");
+  if (currentTheme) {
+    body.classList.add(currentTheme);
   }
+
+  themeToggler.addEventListener("click", () => {
+    body.classList.toggle("dark-theme");
+    if (body.classList.contains("dark-theme")) {
+      localStorage.setItem("theme", "dark-theme");
+    } else {
+      localStorage.removeItem("theme");
+    }
+  });
 });
