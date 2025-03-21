@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insights Marketplace | Insights Edge</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/marketplace.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <nav>
+    <div class="container nav-container">
+      <a href="/" class="logo">
+        <span class="gradient-text">InsightsEdge</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/marketplace" class="active">Marketplace</a>
+      </div>
+      <div class="theme-toggler">
+        <i class="fa-solid fa-moon"></i>
+        <i class="fa-solid fa-sun"></i>
+      </div>
+    </div>
+  </nav>
+
+  <div class="marketplace-container">
+    <header class="marketplace-header">
+      <div class="container">
+        <h1>Insights <span class="gradient-text">Marketplace</span></h1>
+        <p class="marketplace-subtitle">Discover valuable business insights from industry experts</p>
+        
+        <div class="marketplace-search">
+          <div class="search-filters">
+            <div class="filter-group">
+              <label for="industry-filter">Industry</label>
+              <select id="industry-filter">
+                <option value="">All Industries</option>
+                <option value="Technology">Technology</option>
+                <option value="Finance">Finance</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Retail">Retail</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Education">Education</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Food">Food & Beverage</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="type-filter">Insight Type</label>
+              <select id="type-filter">
+                <option value="">All Types</option>
+                <option value="Market Trend">Market Trend</option>
+                <option value="Competitive Analysis">Competitive Analysis</option>
+                <option value="Consumer Behavior">Consumer Behavior</option>
+                <option value="Emerging Technology">Emerging Technology</option>
+                <option value="Regulatory Impact">Regulatory Impact</option>
+                <option value="Investment Opportunity">Investment Opportunity</option>
+                <option value="Risk Assessment">Risk Assessment</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="sort-filter">Sort By</label>
+              <select id="sort-filter">
+                <option value="newest">Newest First</option>
+                <option value="rating">Highest Rated</option>
+                <option value="popular">Most Popular</option>
+              </select>
+            </div>
+          </div>
+          <button id="search-insights" class="btn btn-primary">
+            <i class="fas fa-search"></i> Search
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="marketplace-content">
+      <div class="container">
+        <div class="insights-grid" id="insights-grid">
+          <div class="loading-spinner">Loading insights...</div>
+        </div>
+        
+        <div class="pagination" id="pagination">
+          <!-- Pagination will be added dynamically -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Insight Detail Modal -->
+  <div id="insight-detail-modal" class="modal">
+    <div class="modal-content insight-modal-content">
+      <span class="modal-close">&times;</span>
+      <div id="insight-detail-content">
+        <div class="loading-spinner">Loading insight details...</div>
+      </div>
+      <div class="insight-actions" id="insight-actions">
+        <button id="purchase-insight-btn" class="btn btn-primary">
+          <i class="fas fa-shopping-cart"></i> Purchase Insight (10 BPT)
+        </button>
+      </div>
+      <div class="feedback-section" id="feedback-section" style="display: none;">
+        <h3>Rate this Insight</h3>
+        <div class="rating-stars">
+          <i class="far fa-star" data-rating="1"></i>
+          <i class="far fa-star" data-rating="2"></i>
+          <i class="far fa-star" data-rating="3"></i>
+          <i class="far fa-star" data-rating="4"></i>
+          <i class="far fa-star" data-rating="5"></i>
+        </div>
+        <div class="form-group">
+          <label for="feedback-comments">Comments (Optional)</label>
+          <textarea id="feedback-comments" rows="3"></textarea>
+        </div>
+        <button id="submit-feedback-btn" class="btn btn-secondary">Submit Feedback</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/script.js"></script>
+  <script src="/static/js/marketplace.js"></script>
+</body>
+</html>

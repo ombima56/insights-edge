@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <script defer src="/static/js/script.js"></script>
+    <script defer src="/static/js/auth.js"></script>
+
+    <title>InsightsEdge - Authentication</title>
+  </head>
+  <body>
+    <nav class="nav-blur">
+      <div class="nav-container">
+        <div class="logo">
+          <svg class="logo-icon" width="32" height="32" viewBox="0 0 32 32">
+            <path fill="currentColor" d="M16 0L32 8v16L16 32 0 24V8L16 0z" />
+          </svg>
+          <span>InsightsEdge</span>
+        </div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="auth-container">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Sign In</button>
+          <button class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
+
+        <div class="auth-forms">
+          <!-- Login Form -->
+          <form id="loginForm" class="auth-form active">
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to your account</p>
+            
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="loginEmail" name="email" required placeholder="Your email address" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPassword" name="password" required placeholder="Your password" />
+              </div>
+            </div>
+            
+            <div class="form-footer">
+              <button type="submit" class="btn btn-primary submit-button">
+                <span>Sign In</span>
+                <div class="spinner"></div>
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+            
+            <div class="auth-message" id="loginMessage"></div>
+          </form>
+
+          <!-- Signup Form -->
+          <form id="signupForm" class="auth-form">
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Join InsightsEdge today</p>
+            
+            <div class="form-group">
+              <label for="signupEmail">Email</label>
+              <div class="input-with-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="signupEmail" name="email" required placeholder="Your email address" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="signupUsername">Username</label>
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input type="text" id="signupUsername" name="username" required placeholder="Choose a username" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="signupPassword" name="password" required placeholder="Create a password" minlength="8" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="userType">Account Type</label>
+              <div class="user-type-selection">
+                <div class="user-type-option">
+                  <input type="radio" id="individual" name="userType" value="individual" checked />
+                  <label for="individual">
+                    <i class="fas fa-user"></i>
+                    <span>Individual</span>
+                  </label>
+                </div>
+                <div class="user-type-option">
+                  <input type="radio" id="business" name="userType" value="business" />
+                  <label for="business">
+                    <i class="fas fa-building"></i>
+                    <span>Business</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Business fields (conditionally shown) -->
+            <div id="businessFields" class="business-fields">
+              <div class="form-group">
+                <label for="company">Company Name</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-building"></i>
+                  <input type="text" id="company" name="company" placeholder="Your company name" />
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="businessSize">Business Size</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-users"></i>
+                  <select id="businessSize" name="businessSize">
+                    <option value="">Select Business Size</option>
+                    <option value="1-10">1-10 employees</option>
+                    <option value="11-50">11-50 employees</option>
+                    <option value="51-200">51-200 employees</option>
+                    <option value="201+">201+ employees</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-footer">
+              <button type="submit" class="btn btn-primary submit-button">
+                <span>Create Account</span>
+                <div class="spinner"></div>
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+            
+            <div class="auth-message" id="signupMessage"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="logo">
+              <i class="fas fa-cube gradient-text"></i>
+              <span>InsightsEdge</span>
+            </div>
+            <p>
+              Empowering small businesses with analytics powered by blockchain
+            </p>
+          </div>
+          <div class="footer-links">
+            <div class="link-group">
+              <h4>Partners</h4>
+              <a href="https://lisk.com/">Lisk</a>
+              <a href="https://www.adamur.io/">ADAMUR</a>
+              <a href="https://www.web3clubs.io/">Web3 Clubs</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 InsightsEdge. All rights reserved.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

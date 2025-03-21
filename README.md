@@ -5,7 +5,9 @@ A blockchain-based platform delivering actionable insights to small businesses b
 - **Actionable Insights**: Aggregates and analyzes public data to provide personalized recommendations for small businesses.  
 - **Token Rewards**: Users earn tokens for contributing or engaging with the platform.  
 - **Secure and Transparent**: Built on blockchain for enhanced security and data integrity.  
-- **Intuitive Interface**: A user-friendly interface built with React.js. 
+- **Intuitive Interface**: A user-friendly interface with dashboard and marketplace features.
+- **Business Dashboard**: Centralized dashboard for businesses to manage their profiles, insights, and subscriptions.
+- **Insights Marketplace**: Browse, purchase, and provide feedback on business insights from various industries.
 
 ## 2. Tools and Technologies  
 
@@ -17,16 +19,18 @@ A blockchain-based platform delivering actionable insights to small businesses b
 - **[Go](https://go.dev/)**: For high-performance API development, ensuring efficient data aggregation and analysis.  
 
 ### **3. Frontend**
-- **[React.js](https://react.dev/)**: For building an interactive and responsive user interface. 
+- **HTML/CSS/JavaScript**: For building an interactive and responsive user interface.
+- **Modern UI Components**: Responsive design with grid layouts and interactive elements.
+- **Client-side Authentication**: JWT-based authentication for secure user sessions.
 
 # Setup Instructions  
 
 ### **1. Prerequisites**  
 Ensure you have the following installed:  
-- Node.js and npm/yarn  
 - Go (1.19 or later)  
 - Solidity compiler (via Remix or Hardhat)  
 - Celo Wallet and CLI  
+- Node.js and npm/yarn  
 
 ### **2. Clone the Repository**  
 ```bash
@@ -44,7 +48,6 @@ cd backend
 ### 2. Install dependencies:
 ```sh
 go mod tidy
-
 ```
 
 ### 3. Run the server:
@@ -65,41 +68,48 @@ npx hardhat compile
 npx hardhat run scripts/deploy.js --network celo
 ```
 
-## 5. Frontend Setup (React.js)
-### 1. Navigate to the frontend folder:
+## 5. Frontend Features
 
-```sh
-cd frontend
-```
-### 2. Install dependencies:
+### Dashboard
+The dashboard provides businesses with a comprehensive overview of their account:
 
-```sh
-npm install
-```
-### 3. Start the development server:
+- **Profile Management**: Update business information and settings
+- **Insights Management**: Create, edit, and monitor published insights
+- **Subscription Management**: View and manage subscription plans
+- **Transaction History**: Track all platform transactions
+- **Analytics**: View performance metrics for published insights
 
-```sh
-npm start
-```
+### Marketplace
+The marketplace allows users to discover and purchase business insights:
+
+- **Search & Filter**: Find insights by industry, type, and other criteria
+- **Insight Preview**: View summaries before purchasing
+- **Purchase System**: Securely buy insights using platform tokens
+- **Feedback System**: Rate and comment on purchased insights
+- **Recommendations**: Discover relevant insights based on interests
+
 ## Usage
 ### 1. Access the Platform:
 Open your browser and navigate to http://localhost:3000.
+
 ### 2. Connect Wallet:
 Use the Celo Wallet to connect and interact with the platform.
-### 3. Explore Insights:
 
--    Browse data-driven insights.
+### 3. Explore Insights:
+-    Browse data-driven insights in the marketplace.
 -    Earn tokens by contributing anonymized data or engaging with content.
 
-### 4. View Tokens:
-Check token balances and redeem or transfer tokens via the platform.
+### 4. Business Dashboard:
+-    Register your business and create a profile.
+-    Publish insights and track their performance.
+-    Manage subscriptions and view transaction history.
 
 ## Roadmap
 ### Phase 1: MVP Development
 
 -    Build core backend services for data aggregation.
 -    Develop and deploy tokenization smart contracts.
--    Create a basic React.js interface for users.
+-    Create a basic frontend interface for users.
 
 ### Phase 2: Tokenized Rewards System
 
