@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT UNIQUE,
     company TEXT,
     business_size TEXT,
+    user_type TEXT NOT NULL CHECK(user_type IN ('individual', 'business')),
+    password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
