@@ -1,501 +1,714 @@
 {{define "content"}}
 <div class="dashboard">
+  <!-- <div class="container"> -->
+    <!-- <div class="dashboard-header">
+      <h1>Market Insights Dashboard</h1>
+      <div class="dashboard-actions">
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search insights..."
+            class="search-input"
+          />
+          <button class="search-btn"><i class="fas fa-search">🔍</i></button>
+        </div>
+        <select id="industryFilter" onchange="filterInsights()">
+          <option value="all">All Industries</option>
+          <option value="Technology">Technology</option>
+          <option value="Retail">Retail</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Finance">Finance</option>
+          <option value="Energy">Energy</option>
+        </select>
+        <button
+          class="btn btn-primary export-btn"
+          onclick="exportDashboardAsPDF()"
+        >
+          Export Data
+        </button>
+      </div>
+    </div> -->
     <div class="container">
-        <div class="dashboard-header">
-            <h1>Market Insights Dashboard</h1>
-            <div class="dashboard-actions">
-                <div class="search-container">
-                    <input type="text" placeholder="Search insights..." class="search-input">
-                    <button class="search-btn"><i class="fas fa-search">🔍</i></button>
-                </div>
-                <select id="industryFilter" onchange="filterInsights()">
-                    <option value="all">All Industries</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Retail">Retail</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Energy">Energy</option>
-                </select>
-                <button class="btn btn-primary export-btn" onclick="exportDashboardAsPDF()">Export Data</button>
-            </div>
+      <header>
+        <h1>Insights Marketplace</h1>
+        <div id="wallet-info">
+          <div id="connection-status">Not Connected</div>
+          <button id="connect-wallet">Connect Wallet</button>
+          <div id="account-address"></div>
+        </div>
+      </header>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="browse">
+          Browse Insights
+        </button>
+        <button class="tab-btn" data-tab="create">Create Insight</button>
+        <button class="tab-btn" data-tab="my-insights">My Insights</button>
+      </div>
+
+      <div id="browse" class="tab-content active">
+        <h2>Available Insights</h2>
+        <div class="filters">
+          <select id="industry-filter">
+            <option value="">All Industries</option>
+          </select>
+          <input
+            type="text"
+            id="search-insights"
+            placeholder="Search by title..."
+          />
+        </div>
+        <div id="insights-container"></div>
+        <div id="pagination">
+          <button id="prev-page">Previous</button>
+          <span id="page-info">Page 1</span>
+          <button id="next-page">Next</button>
+        </div>
+      </div>
+
+      <div id="create" class="tab-content">
+        <h2>Create New Insight</h2>
+        <form id="create-insight-form">
+          <div class="form-group">
+            <label for="industry">Industry</label>
+            <input type="text" id="industry" required />
+          </div>
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" required />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="price">Price (ETH)</label>
+            <input type="number" id="price" step="0.001" min="0" required />
+          </div>
+          <button type="submit">Create Insight</button>
+        </form>
+      </div>
+
+      <div id="my-insights" class="tab-content">
+        <h2>My Insights</h2>
+        <div class="tabs sub-tabs">
+          <button class="sub-tab-btn active" data-subtab="created">
+            Created
+          </button>
+          <button class="sub-tab-btn" data-subtab="purchased">Purchased</button>
         </div>
 
-        <!-- Key Metrics Section -->
-        <div class="key-metrics">
-            <div class="metric-card">
-                <div class="metric-icon">📈</div>
-                <div class="metric-content">
-                    <h3>Market Growth</h3>
-                    <div class="metric-value">+24.8%</div>
-                    <div class="metric-change positive">↑ 3.2% from last month</div>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon">👥</div>
-                <div class="metric-content">
-                    <h3>New Competitors</h3>
-                    <div class="metric-value">12</div>
-                    <div class="metric-change negative">↑ 4 from last quarter</div>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon">💰</div>
-                <div class="metric-content">
-                    <h3>Investment Opportunity</h3>
-                    <div class="metric-value">$1.2B</div>
-                    <div class="metric-change positive">↑ 18.5% YoY</div>
-                </div>
-            </div>
+        <div id="created" class="sub-tab-content active">
+          <div id="created-insights-container" class="insights-list"></div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h3>Industry Growth Trends</h3>
-                    <div class="card-actions">
-                        <button class="btn-icon" onclick="toggleChartView('growthChart', 'line')">📈</button>
-                        <button class="btn-icon" onclick="toggleChartView('growthChart', 'bar')">📊</button>
-                        <div class="dropdown">
-                            <button class="btn-icon">⋮</button>
-                            <div class="dropdown-content">
-                                <a href="#" onclick="downloadChart('growthChart')">Download</a>
-                                <a href="#" onclick="shareChart('growthChart')">Share</a>
-                                <a href="#" onclick="fullscreenChart('growthChart')">Fullscreen</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="growthChart"></canvas>
-                </div>
-                <div class="real-time-indicator">
-                    <span class="pulse"></span> Real-time data
-                </div>
-            </div>
-            
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h3>Market Share Distribution</h3>
-                    <div class="card-actions">
-                        <button class="btn-icon" onclick="toggleChartView('marketShareChart', 'doughnut')">🍩</button>
-                        <button class="btn-icon" onclick="toggleChartView('marketShareChart', 'pie')">🥧</button>
-                        <div class="dropdown">
-                            <button class="btn-icon">⋮</button>
-                            <div class="dropdown-content">
-                                <a href="#" onclick="downloadChart('marketShareChart')">Download</a>
-                                <a href="#" onclick="shareChart('marketShareChart')">Share</a>
-                                <a href="#" onclick="fullscreenChart('marketShareChart')">Fullscreen</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="marketShareChart"></canvas>
-                </div>
-                <div class="chart-legend">
-                    <div class="legend-item"><span class="color-dot" style="background-color: #6366f1"></span>Technology (40%)</div>
-                    <div class="legend-item"><span class="color-dot" style="background-color: #818cf8"></span>Retail (35%)</div>
-                    <div class="legend-item"><span class="color-dot" style="background-color: #10b981"></span>Healthcare (25%)</div>
-                </div>
-            </div>
-            
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h3>Investment Trends</h3>
-                    <div class="card-actions">
-                        <button class="btn-icon" onclick="toggleChartView('investmentChart', 'bar')">📊</button>
-                        <button class="btn-icon" onclick="toggleChartView('investmentChart', 'line')">📈</button>
-                        <div class="dropdown">
-                            <button class="btn-icon">⋮</button>
-                            <div class="dropdown-content">
-                                <a href="#" onclick="downloadChart('investmentChart')">Download</a>
-                                <a href="#" onclick="shareChart('investmentChart')">Share</a>
-                                <a href="#" onclick="fullscreenChart('investmentChart')">Fullscreen</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="investmentChart"></canvas>
-                </div>
-                <div class="insight-summary">
-                    <p>Q4 shows <strong>61% growth</strong> in investments compared to Q1, indicating strong market confidence.</p>
-                </div>
-            </div>
+        <div id="purchased" class="sub-tab-content">
+          <div id="purchased-insights-container" class="insights-list"></div>
         </div>
+      </div>
 
-        <!-- Predictive Insights Section -->
-        <div class="predictive-insights">
-            <h2>Summarized Predictive Insights</h2>
-            <div class="insights-grid">
-                <div class="insight-card">
-                    <div class="insight-header">
-                        <div class="insight-icon">🔮</div>
-                        <h3>Market Prediction</h3>
-                    </div>
-                    <p>Based on current trends, we predict a <strong>32% growth</strong> in the Technology sector over the next quarter, with particular strength in AI and cloud services.</p>
-                    <div class="confidence-meter">
-                        <div class="confidence-label">Confidence: 87%</div>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 87%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-header">
-                        <div class="insight-icon">⚠️</div>
-                        <h3>Risk Alert</h3>
-                    </div>
-                    <p>Potential regulatory changes in the Healthcare sector may impact growth projections. Monitor developments in telemedicine legislation.</p>
-                    <div class="confidence-meter">
-                        <div class="confidence-label">Risk Level: Medium</div>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill warning" style="width: 65%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="insight-card">
-                    <div class="insight-header">
-                        <div class="insight-icon">💡</div>
-                        <h3>Opportunity Spotlight</h3>
-                    </div>
-                    <p>Emerging market gap identified in sustainable retail solutions. Early movers can capture up to <strong>15% market share</strong> within 6 months.</p>
-                    <div class="confidence-meter">
-                        <div class="confidence-label">Opportunity Score: 92%</div>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill success" style="width: 92%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div id="insight-details-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2 id="modal-insight-title"></h2>
+          <p>
+            <strong>Industry:</strong> <span id="modal-insight-industry"></span>
+          </p>
+          <p>
+            <strong>Provider:</strong> <span id="modal-insight-provider"></span>
+          </p>
+          <p>
+            <strong>Price:</strong> <span id="modal-insight-price"></span> ETH
+          </p>
+          <p>
+            <strong>Created:</strong> <span id="modal-insight-timestamp"></span>
+          </p>
+          <div id="modal-insight-description-container">
+            <h3>Description</h3>
+            <p id="modal-insight-description"></p>
+          </div>
+          <button id="purchase-insight-btn">Purchase Insight</button>
         </div>
+      </div>
 
-        <div class="insights-table-container">
-            <div class="table-header">
-                <h2>Latest Market Insights</h2>
-                <div class="table-actions">
-                    <button class="btn btn-secondary refresh-btn">Refresh Data</button>
-                    <div class="view-toggle">
-                        <button class="btn-icon active" data-view="table">📋</button>
-                        <button class="btn-icon" data-view="cards">🃏</button>
-                    </div>
-                </div>
-            </div>
-            <table class="insights-table">
-                <thead>
-                    <tr>
-                        <th>Industry <span class="sort-icon">↕️</span></th>
-                        <th>Title <span class="sort-icon">↕️</span></th>
-                        <th>Description</th>
-                        <th>Trend Value <span class="sort-icon">↕️</span></th>
-                        <th>Date <span class="sort-icon">↕️</span></th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{range .Insights}}
-                    <tr>
-                        <td><span class="industry-badge {{.Industry}}">{{.Industry}}</span></td>
-                        <td>{{.Title}}</td>
-                        <td>{{.Description}}</td>
-                        <td><span class="trend-value {{if ge .TrendValue 0.0}}positive{{else}}negative{{end}}">{{.TrendValue}}%</span></td>
-                        <td>{{.CreatedAt}}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon">👁️</button>
-                                <button class="btn-icon">📊</button>
-                                <button class="btn-icon">⬇️</button>
-                            </div>
-                        </td>
-                    </tr>
-                    {{end}}
-                </tbody>
-            </table>
-        </div>
+      <div id="toast" class="toast"></div>
     </div>
-</div>
+    <!-- Key Metrics Section -->
+    <div class="key-metrics">
+      <div class="metric-card">
+        <div class="metric-icon">📈</div>
+        <div class="metric-content">
+          <h3>Market Growth</h3>
+          <div class="metric-value">+24.8%</div>
+          <div class="metric-change positive">↑ 3.2% from last month</div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">👥</div>
+        <div class="metric-content">
+          <h3>New Competitors</h3>
+          <div class="metric-value">12</div>
+          <div class="metric-change negative">↑ 4 from last quarter</div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">💰</div>
+        <div class="metric-content">
+          <h3>Investment Opportunity</h3>
+          <div class="metric-value">$1000</div>
+          <div class="metric-change positive">↑ 18.5% YoY</div>
+        </div>
+      </div>
+    </div>
 
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3>Industry Growth Trends</h3>
+          <div class="card-actions">
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('growthChart', 'line')"
+            >
+              📈
+            </button>
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('growthChart', 'bar')"
+            >
+              📊
+            </button>
+            <div class="dropdown">
+              <button class="btn-icon">⋮</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="downloadChart('growthChart')">Download</a>
+                <a href="#" onclick="shareChart('growthChart')">Share</a>
+                <a href="#" onclick="fullscreenChart('growthChart')"
+                  >Fullscreen</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="growthChart"></canvas>
+        </div>
+        <div class="real-time-indicator">
+          <span class="pulse"></span> Real-time data
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3>Market Share Distribution</h3>
+          <div class="card-actions">
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('marketShareChart', 'doughnut')"
+            >
+              🍩
+            </button>
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('marketShareChart', 'pie')"
+            >
+              🥧
+            </button>
+            <div class="dropdown">
+              <button class="btn-icon">⋮</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="downloadChart('marketShareChart')"
+                  >Download</a
+                >
+                <a href="#" onclick="shareChart('marketShareChart')">Share</a>
+                <a href="#" onclick="fullscreenChart('marketShareChart')"
+                  >Fullscreen</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="marketShareChart"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="color-dot" style="background-color: #6366f1"></span
+            >Technology (40%)
+          </div>
+          <div class="legend-item">
+            <span class="color-dot" style="background-color: #818cf8"></span
+            >Retail (35%)
+          </div>
+          <div class="legend-item">
+            <span class="color-dot" style="background-color: #10b981"></span
+            >Healthcare (25%)
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3>Investment Trends</h3>
+          <div class="card-actions">
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('investmentChart', 'bar')"
+            >
+              📊
+            </button>
+            <button
+              class="btn-icon"
+              onclick="toggleChartView('investmentChart', 'line')"
+            >
+              📈
+            </button>
+            <div class="dropdown">
+              <button class="btn-icon">⋮</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="downloadChart('investmentChart')"
+                  >Download</a
+                >
+                <a href="#" onclick="shareChart('investmentChart')">Share</a>
+                <a href="#" onclick="fullscreenChart('investmentChart')"
+                  >Fullscreen</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="investmentChart"></canvas>
+        </div>
+        <div class="insight-summary">
+          <p>
+            Q4 shows <strong>61% growth</strong> in investments compared to Q1,
+            indicating strong market confidence.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Predictive Insights Section -->
+    <div class="predictive-insights">
+      <h2>Summarized Predictive Insights</h2>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon">🔮</div>
+            <h3>Market Prediction</h3>
+          </div>
+          <p>
+            Based on current trends, we predict a <strong>32% growth</strong> in
+            the Technology sector over the next quarter, with particular
+            strength in AI and cloud services.
+          </p>
+          <div class="confidence-meter">
+            <div class="confidence-label">Confidence: 87%</div>
+            <div class="confidence-bar">
+              <div class="confidence-fill" style="width: 87%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon">⚠️</div>
+            <h3>Risk Alert</h3>
+          </div>
+          <p>
+            Potential regulatory changes in the Healthcare sector may impact
+            growth projections. Monitor developments in telemedicine
+            legislation.
+          </p>
+          <div class="confidence-meter">
+            <div class="confidence-label">Risk Level: Medium</div>
+            <div class="confidence-bar">
+              <div class="confidence-fill warning" style="width: 65%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-header">
+            <div class="insight-icon">💡</div>
+            <h3>Opportunity Spotlight</h3>
+          </div>
+          <p>
+            Emerging market gap identified in sustainable retail solutions.
+            Early movers can capture up to
+            <strong>15% market share</strong> within 6 months.
+          </p>
+          <div class="confidence-meter">
+            <div class="confidence-label">Opportunity Score: 92%</div>
+            <div class="confidence-bar">
+              <div class="confidence-fill success" style="width: 92%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insights-table-container">
+      <div class="table-header">
+        <h2>Latest Market Insights</h2>
+        <div class="table-actions">
+          <button class="btn btn-secondary refresh-btn">Refresh Data</button>
+          <div class="view-toggle">
+            <button class="btn-icon active" data-view="table">📋</button>
+            <button class="btn-icon" data-view="cards">🃏</button>
+          </div>
+        </div>
+      </div>
+      <table class="insights-table">
+        <thead>
+          <tr>
+            <th>Industry <span class="sort-icon">↕️</span></th>
+            <th>Title <span class="sort-icon">↕️</span></th>
+            <th>Description</th>
+            <th>Trend Value <span class="sort-icon">↕️</span></th>
+            <th>Date <span class="sort-icon">↕️</span></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Insights}}
+          <tr>
+            <td>
+              <span class="industry-badge {{.Industry}}">{{.Industry}}</span>
+            </td>
+            <td>{{.Title}}</td>
+            <td>{{.Description}}</td>
+            <td>
+              <span
+                class="trend-value {{if ge .TrendValue 0.0}}positive{{else}}negative{{end}}"
+                >{{.TrendValue}}%</span
+              >
+            </td>
+            <td>{{.CreatedAt}}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon">👁️</button>
+                <button class="btn-icon">📊</button>
+                <button class="btn-icon">⬇️</button>
+              </div>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
 <script>
-// Initialize charts with dummy data
-document.addEventListener('DOMContentLoaded', function() {
+  // Initialize charts with dummy data
+  document.addEventListener("DOMContentLoaded", function () {
     // Define filterInsights function at the beginning
-    window.filterInsights = function() {
-        const industry = document.getElementById('industryFilter').value;
-        console.log('Filtering insights for industry:', industry);
-        
-        // Animation for filtering
-        const tableRows = document.querySelectorAll('.insights-table tbody tr');
-        tableRows.forEach(row => {
-            const rowIndustry = row.querySelector('.industry-badge').textContent;
-            if (industry === 'all' || rowIndustry === industry) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-            
-            // Animation effect
-            row.style.opacity = '0.5';
-            row.style.transform = 'translateY(10px)';
+    window.filterInsights = function () {
+      const industry = document.getElementById("industryFilter").value;
+      console.log("Filtering insights for industry:", industry);
+
+      // Animation for filtering
+      const tableRows = document.querySelectorAll(".insights-table tbody tr");
+      tableRows.forEach((row) => {
+        const rowIndustry = row.querySelector(".industry-badge").textContent;
+        if (industry === "all" || rowIndustry === industry) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+
+        // Animation effect
+        row.style.opacity = "0.5";
+        row.style.transform = "translateY(10px)";
+      });
+
+      setTimeout(() => {
+        tableRows.forEach((row) => {
+          if (row.style.display !== "none") {
+            row.style.opacity = "1";
+            row.style.transform = "translateY(0)";
+          }
         });
-        
-        setTimeout(() => {
-            tableRows.forEach(row => {
-                if (row.style.display !== 'none') {
-                    row.style.opacity = '1';
-                    row.style.transform = 'translateY(0)';
-                }
-            });
-        }, 300);
+      }, 300);
     };
 
     // Export dashboard as PDF function
-    window.exportDashboardAsPDF = function() {
-        // Show loading indicator
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = '<div class="loading-spinner"></div><p>Generating PDF...</p>';
-        document.body.appendChild(loadingOverlay);
-        
-        // Get the dashboard content
-        const dashboardContent = document.querySelector('.dashboard');
-        
-        // Clone the dashboard to avoid modifying the original
-        const dashboardClone = dashboardContent.cloneNode(true);
-        
-        // Remove any interactive elements that shouldn't be in the PDF
-        const elementsToRemove = dashboardClone.querySelectorAll('.theme-toggle, .search-container, .export-btn');
-        elementsToRemove.forEach(el => el.remove());
-        
-        // Set PDF options
-        const options = {
-            margin: 10,
-            filename: 'insights-edge-dashboard.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-        };
-        
-        // Generate the PDF
-        html2pdf().from(dashboardClone).set(options).save().then(() => {
-            // Remove loading overlay when done
-            document.body.removeChild(loadingOverlay);
-        }).catch(error => {
-            console.error('Error generating PDF:', error);
-            document.body.removeChild(loadingOverlay);
-            alert('Failed to generate PDF. Please try again.');
+    window.exportDashboardAsPDF = function () {
+      // Show loading indicator
+      const loadingOverlay = document.createElement("div");
+      loadingOverlay.className = "loading-overlay";
+      loadingOverlay.innerHTML =
+        '<div class="loading-spinner"></div><p>Generating PDF...</p>';
+      document.body.appendChild(loadingOverlay);
+
+      // Get the dashboard content
+      const dashboardContent = document.querySelector(".dashboard");
+
+      // Clone the dashboard to avoid modifying the original
+      const dashboardClone = dashboardContent.cloneNode(true);
+
+      // Remove any interactive elements that shouldn't be in the PDF
+      const elementsToRemove = dashboardClone.querySelectorAll(
+        ".theme-toggle, .search-container, .export-btn"
+      );
+      elementsToRemove.forEach((el) => el.remove());
+
+      // Set PDF options
+      const options = {
+        margin: 10,
+        filename: "insights-edge-dashboard.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+      };
+
+      // Generate the PDF
+      html2pdf()
+        .from(dashboardClone)
+        .set(options)
+        .save()
+        .then(() => {
+          // Remove loading overlay when done
+          document.body.removeChild(loadingOverlay);
+        })
+        .catch((error) => {
+          console.error("Error generating PDF:", error);
+          document.body.removeChild(loadingOverlay);
+          alert("Failed to generate PDF. Please try again.");
         });
     };
 
     // Growth Trends Chart
-    const growthCtx = document.getElementById('growthChart').getContext('2d');
+    const growthCtx = document.getElementById("growthChart").getContext("2d");
     window.growthChart = new Chart(growthCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Technology',
-                data: [30, 35, 45, 55, 59, 65],
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                tension: 0.4,
-                fill: true
-            }, {
-                label: 'Retail',
-                data: [25, 30, 35, 40, 45, 50],
-                borderColor: '#818cf8',
-                backgroundColor: 'rgba(129, 140, 248, 0.1)',
-                tension: 0.4,
-                fill: true
-            }, {
-                label: 'Healthcare',
-                data: [20, 25, 30, 40, 45, 55],
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
+      type: "line",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Technology",
+            data: [30, 35, 45, 55, 59, 65],
+            borderColor: "#6366f1",
+            backgroundColor: "rgba(99, 102, 241, 0.1)",
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: "Retail",
+            data: [25, 30, 35, 40, 45, 50],
+            borderColor: "#818cf8",
+            backgroundColor: "rgba(129, 140, 248, 0.1)",
+            tension: 0.4,
+            fill: true,
+          },
+          {
+            label: "Healthcare",
+            data: [20, 25, 30, 40, 45, 55],
+            borderColor: "#10b981",
+            backgroundColor: "rgba(16, 185, 129, 0.1)",
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          tooltip: {
+            mode: "index",
+            intersect: false,
+          },
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                }
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              drawBorder: false,
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        drawBorder: false,
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+          },
+          x: {
+            grid: {
+              display: false,
             },
-            animation: {
-                duration: 2000,
-                easing: 'easeOutQuart'
-            }
-        }
+          },
+        },
+        animation: {
+          duration: 2000,
+          easing: "easeOutQuart",
+        },
+      },
     });
 
     // Market Share Chart
-    const marketShareCtx = document.getElementById('marketShareChart').getContext('2d');
+    const marketShareCtx = document
+      .getElementById("marketShareChart")
+      .getContext("2d");
     window.marketShareChart = new Chart(marketShareCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Technology', 'Retail', 'Healthcare'],
-            datasets: [{
-                data: [40, 35, 25],
-                backgroundColor: ['#6366f1', '#818cf8', '#10b981'],
-                borderWidth: 0,
-                hoverOffset: 15
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': ' + context.raw + '%';
-                        }
-                    }
-                }
+      type: "doughnut",
+      data: {
+        labels: ["Technology", "Retail", "Healthcare"],
+        datasets: [
+          {
+            data: [40, 35, 25],
+            backgroundColor: ["#6366f1", "#818cf8", "#10b981"],
+            borderWidth: 0,
+            hoverOffset: 15,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.label + ": " + context.raw + "%";
+              },
             },
-            cutout: '70%',
-            animation: {
-                animateRotate: true,
-                animateScale: true
-            }
-        }
+          },
+        },
+        cutout: "70%",
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+        },
+      },
     });
 
     // Investment Trends Chart
-    const investmentCtx = document.getElementById('investmentChart').getContext('2d');
+    const investmentCtx = document
+      .getElementById("investmentChart")
+      .getContext("2d");
     window.investmentChart = new Chart(investmentCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-            datasets: [{
-                label: 'Investment (millions)',
-                data: [150, 230, 180, 290],
-                backgroundColor: [
-                    'rgba(99, 102, 241, 0.7)',
-                    'rgba(99, 102, 241, 0.8)',
-                    'rgba(99, 102, 241, 0.9)',
-                    'rgba(99, 102, 241, 1.0)'
-                ],
-                borderRadius: 6
-            }]
+      type: "bar",
+      data: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [
+          {
+            label: "Investment (millions)",
+            data: [150, 230, 180, 290],
+            backgroundColor: [
+              "rgba(99, 102, 241, 0.7)",
+              "rgba(99, 102, 241, 0.8)",
+              "rgba(99, 102, 241, 0.9)",
+              "rgba(99, 102, 241, 1.0)",
+            ],
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return "$" + context.raw + "M";
+              },
+            },
+          },
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.raw + 'M';
-                        }
-                    }
-                }
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              drawBorder: false,
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        drawBorder: false,
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+          },
+          x: {
+            grid: {
+              display: false,
             },
-            animation: {
-                delay: function(context) {
-                    return context.dataIndex * 300;
-                }
-            }
-        }
+          },
+        },
+        animation: {
+          delay: function (context) {
+            return context.dataIndex * 300;
+          },
+        },
+      },
     });
 
     // Add animation to metric cards
-    const metricCards = document.querySelectorAll('.metric-card');
+    const metricCards = document.querySelectorAll(".metric-card");
     metricCards.forEach((card, index) => {
-        setTimeout(() => {
-            card.classList.add('animate-in');
-        }, index * 200);
+      setTimeout(() => {
+        card.classList.add("animate-in");
+      }, index * 200);
     });
 
     // Add animation to insight cards
-    const insightCards = document.querySelectorAll('.insight-card');
+    const insightCards = document.querySelectorAll(".insight-card");
     insightCards.forEach((card, index) => {
-        setTimeout(() => {
-            card.classList.add('animate-in');
-        }, 500 + index * 200);
+      setTimeout(() => {
+        card.classList.add("animate-in");
+      }, 500 + index * 200);
     });
 
     // Simulate real-time data updates
     setInterval(updateRandomData, 5000);
-});
+  });
 
-function updateRandomData() {
+  function updateRandomData() {
     // Update a random data point in the growth chart
-    const datasetIndex = Math.floor(Math.random() * window.growthChart.data.datasets.length);
-    const dataIndex = Math.floor(Math.random() * window.growthChart.data.datasets[datasetIndex].data.length);
-    const newValue = window.growthChart.data.datasets[datasetIndex].data[dataIndex] + (Math.random() > 0.5 ? 1 : -1) * Math.random() * 5;
-    window.growthChart.data.datasets[datasetIndex].data[dataIndex] = Math.max(0, newValue);
+    const datasetIndex = Math.floor(
+      Math.random() * window.growthChart.data.datasets.length
+    );
+    const dataIndex = Math.floor(
+      Math.random() * window.growthChart.data.datasets[datasetIndex].data.length
+    );
+    const newValue =
+      window.growthChart.data.datasets[datasetIndex].data[dataIndex] +
+      (Math.random() > 0.5 ? 1 : -1) * Math.random() * 5;
+    window.growthChart.data.datasets[datasetIndex].data[dataIndex] = Math.max(
+      0,
+      newValue
+    );
     window.growthChart.update();
-    
-    // Flash the real-time indicator
-    const indicators = document.querySelectorAll('.real-time-indicator');
-    indicators.forEach(indicator => {
-        indicator.classList.add('flash');
-        setTimeout(() => {
-            indicator.classList.remove('flash');
-        }, 1000);
-    });
-}
 
-function toggleChartView(chartId, type) {
+    // Flash the real-time indicator
+    const indicators = document.querySelectorAll(".real-time-indicator");
+    indicators.forEach((indicator) => {
+      indicator.classList.add("flash");
+      setTimeout(() => {
+        indicator.classList.remove("flash");
+      }, 1000);
+    });
+  }
+
+  function toggleChartView(chartId, type) {
     const chart = window[chartId];
     if (chart) {
-        chart.config.type = type;
-        chart.update();
+      chart.config.type = type;
+      chart.update();
     }
-}
+  }
 
-function downloadChart(chartId) {
-    console.log('Downloading chart:', chartId);
-    alert('Chart download started');
-}
+  function downloadChart(chartId) {
+    console.log("Downloading chart:", chartId);
+    alert("Chart download started");
+  }
 
-function shareChart(chartId) {
-    console.log('Sharing chart:', chartId);
-    alert('Chart sharing options opened');
-}
+  function shareChart(chartId) {
+    console.log("Sharing chart:", chartId);
+    alert("Chart sharing options opened");
+  }
 
-function fullscreenChart(chartId) {
-    console.log('Fullscreen chart:', chartId);
-    alert('Chart opened in fullscreen mode');
-}
+  function fullscreenChart(chartId) {
+    console.log("Fullscreen chart:", chartId);
+    alert("Chart opened in fullscreen mode");
+  }
 </script>
 {{end}}
