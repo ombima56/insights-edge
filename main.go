@@ -21,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("Server starting on %v\n", port)
+	log.Printf("Server starting on http://localhost%v\n", port)
 	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal(err)
 	}
