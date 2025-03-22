@@ -1,0 +1,146 @@
+{{define "content"}}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="accountType">Account Type</label>
+                <div class="account-type-selector">
+                    <div class="account-type-option" data-value="individual">
+                        <div class="account-type-icon">👤</div>
+                        <div class="account-type-label">Individual User</div>
+                    </div>
+                    <div class="account-type-option" data-value="business">
+                        <div class="account-type-icon">🏢</div>
+                        <div class="account-type-label">Business</div>
+                    </div>
+                </div>
+                <input type="hidden" id="accountType" name="accountType" required>
+            </div>
+            <div class="form-group business-fields" style="display: none;">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" name="companyName">
+            </div>
+            <div class="form-group business-fields" style="display: none;">
+                <label for="industry">Industry</label>
+                <select id="industry" name="industry" class="form-select">
+                    <option value="">Select your industry</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="8">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p class="auth-footer">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+// Handle account type selection
+document.querySelectorAll('.account-type-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove active class from all options
+        document.querySelectorAll('.account-type-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        
+        // Add active class to selected option
+        this.classList.add('active');
+        
+        // Set the hidden input value
+        const value = this.getAttribute('data-value');
+        document.getElementById('accountType').value = value;
+        
+        // Show/hide business fields
+        const businessFields = document.querySelectorAll('.business-fields');
+        if (value === 'business') {
+            businessFields.forEach(field => field.style.display = 'block');
+            document.getElementById('companyName').required = true;
+            document.getElementById('industry').required = true;
+        } else {
+            businessFields.forEach(field => field.style.display = 'none');
+            document.getElementById('companyName').required = false;
+            document.getElementById('industry').required = false;
+        }
+    });
+});
+
+async function handleRegister(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+
+    if (formData.get('password') !== formData.get('confirmPassword')) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    // Validate account type is selected
+    if (!formData.get('accountType')) {
+        alert('Please select an account type');
+        return;
+    }
+
+    // Prepare registration data
+    const registrationData = {
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        accountType: formData.get('accountType')
+    };
+
+    // Add business-specific fields if applicable
+    if (formData.get('accountType') === 'business') {
+        registrationData.companyName = formData.get('companyName');
+        registrationData.industry = formData.get('industry');
+    }
+
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(registrationData)
+        });
+
+        if (response.ok) {
+            // Redirect to login page instead of dashboard
+            window.location.href = '/login?registered=true';
+        } else {
+            const data = await response.json();
+            alert(data.error || 'Registration failed');
+        }
+    } catch (error) {
+        alert('An error occurred. Please try again.');
+    }
+}
+</script>
+{{end}}
