@@ -1,0 +1,114 @@
+{{define "market"}}
+
+    <div class="container">
+      <header>
+        <h1>Insights Marketplace</h1>
+        <div id="wallet-info">
+          <div id="connection-status">Not Connected</div>
+          <button id="connect-wallet">Connect Wallet</button>
+          <div id="account-address"></div>
+        </div>
+      </header>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="browse">
+          Browse Insights
+        </button>
+        <button class="tab-btn" data-tab="create">Create Insight</button>
+        <button class="tab-btn" data-tab="my-insights">My Insights</button>
+      </div>
+
+      <div id="browse" class="tab-content active">
+        <h2>Available Insights</h2>
+        <div class="filters">
+          <select id="industry-filter">
+            <option value="">All Industries</option>
+          </select>
+          <input
+            type="text"
+            id="search-insights"
+            placeholder="Search by title..."
+          />
+        </div>
+        <div id="insights-container"></div>
+        <div id="pagination">
+          <button id="prev-page">Previous</button>
+          <span id="page-info">Page 1</span>
+          <button id="next-page">Next</button>
+        </div>
+      </div>
+
+      <div id="create" class="tab-content">
+        <h2>Create New Insight</h2>
+        <form id="create-insight-form">
+          <div class="form-group">
+            <label for="industry">Industry</label>
+            <input type="text" id="industry" required />
+          </div>
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" required />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="price">Price (ETH)</label>
+            <input type="number" id="price" step="0.001" min="0" required />
+          </div>
+          <button type="submit">Create Insight</button>
+        </form>
+      </div>
+
+      <div id="my-insights" class="tab-content">
+        <h2>My Insights</h2>
+        <div class="tabs sub-tabs">
+          <button class="sub-tab-btn active" data-subtab="created">
+            Created
+          </button>
+          <button class="sub-tab-btn" data-subtab="purchased">Purchased</button>
+        </div>
+
+        <div id="created" class="sub-tab-content active">
+          <div id="created-insights-container" class="insights-list"></div>
+        </div>
+
+        <div id="purchased" class="sub-tab-content">
+          <div id="purchased-insights-container" class="insights-list"></div>
+        </div>
+      </div>
+
+      <div id="insight-details-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2 id="modal-insight-title"></h2>
+          <p>
+            <strong>Industry:</strong> <span id="modal-insight-industry"></span>
+          </p>
+          <p>
+            <strong>Provider:</strong> <span id="modal-insight-provider"></span>
+          </p>
+          <p>
+            <strong>Price:</strong> <span id="modal-insight-price"></span> ETH
+          </p>
+          <p>
+            <strong>Created:</strong> <span id="modal-insight-timestamp"></span>
+          </p>
+          <div id="modal-insight-description-container">
+            <h3>Description</h3>
+            <p id="modal-insight-description"></p>
+          </div>
+          <button id="purchase-insight-btn">Purchase Insight</button>
+        </div>
+      </div>
+
+      <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
+    <script src="app.js"></script>
+
+{{ end }}
+
+ 
