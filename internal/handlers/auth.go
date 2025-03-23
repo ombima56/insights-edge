@@ -119,16 +119,16 @@ func RegisterAPIHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := `INSERT INTO users (email, first_name, last_name, password_hash, account_type, company_name, industry) 
 			  VALUES (?, ?, ?, ?, ?, ?, ?)`
-	
-	result, err := database.DB.Exec(query, 
-		req.Email, 
-		req.FirstName, 
-		req.LastName, 
-		hashedPassword, 
-		req.AccountType, 
-		req.CompanyName, 
+
+	result, err := database.DB.Exec(query,
+		req.Email,
+		req.FirstName,
+		req.LastName,
+		hashedPassword,
+		req.AccountType,
+		req.CompanyName,
 		req.Industry)
-	
+
 	if err != nil {
 		http.Error(w, "Email already exists or invalid data", http.StatusBadRequest)
 		return

@@ -20,15 +20,15 @@ type MarketInsight struct {
 type PageData struct {
 	Title           string
 	IsAuthenticated bool
-	User           *User
-	Insights       []MarketInsight
+	User            *User
+	Insights        []MarketInsight
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data *PageData) {
 	if data == nil {
 		data = &PageData{}
 	}
-	
+
 	files := []string{
 		filepath.Join("templates", "layout.html"),
 		filepath.Join("templates", "pages", tmpl+".html"),
@@ -53,7 +53,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &PageData{
-		Title: "Home",
+		Title:           "Home",
 		IsAuthenticated: isAuthenticated(r),
 	}
 	renderTemplate(w, "home", data)
@@ -88,10 +88,10 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &PageData{
-		Title: "Dashboard",
+		Title:           "Dashboard",
 		IsAuthenticated: true,
-		User: user,
-		Insights: insights,
+		User:            user,
+		Insights:        insights,
 	}
 	renderTemplate(w, "dashboard", data)
 }
@@ -113,13 +113,13 @@ func getCurrentUser(r *http.Request) *User {
 		SELECT id, email, first_name, last_name, account_type, company_name, industry 
 		FROM users 
 		WHERE id = ?`, userID).Scan(
-			&user.ID, 
-			&user.Email, 
-			&user.FirstName, 
-			&user.LastName, 
-			&user.AccountType, 
-			&user.CompanyName, 
-			&user.Industry)
+		&user.ID,
+		&user.Email,
+		&user.FirstName,
+		&user.LastName,
+		&user.AccountType,
+		&user.CompanyName,
+		&user.Industry)
 	if err != nil {
 		return nil
 	}
