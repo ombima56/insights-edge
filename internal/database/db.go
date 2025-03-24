@@ -10,7 +10,7 @@ var DB *sql.DB
 
 func InitDB() error {
 	var err error
-	DB, err = sql.Open("sqlite3", "./insights.db")
+	DB, err = sql.Open("sqlite3", "./db/insights_edge.db")
 	if err != nil {
 		return err
 	}
