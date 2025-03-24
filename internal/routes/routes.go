@@ -9,7 +9,7 @@ import (
 
 func InitRoutes() {
 	// Static file server
-	fs := http.FileServer(http.Dir("static"))
+	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static", fs))
 
 	// Routes
