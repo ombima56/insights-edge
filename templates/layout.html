@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}} - Insights Edge</title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script> -->
+    <script>
+      function logout() {
+        fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "same-origin",
+        }).then(() => {
+          window.location.href = "/";
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">Insights Edge</a>
+        <div class="nav-links">
+          {{if .IsAuthenticated}}
+          <a href="/dashboard">Dashboard</a>
+          <button onclick="logout()" class="btn btn-primary">Logout</button>
+          {{else}}
+          <a href="/login">Login</a>
+          <a href="/register" class="btn btn-primary">Get Started</a>
+          {{end}}
+        </div>
+      </div>
+    </nav>
+
+    <main>{{template "content" .}}</main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Insights Edge</h3>
+            <p>
+              Empowering businesses with market insights and competitive
+              intelligence through Web3 technology.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="#about">About</a>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: ombimahillary6@gmail.com</p>
+            <p>Phone: +254 758973394</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Insights Edge. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span class="theme-icon">🌙</span>
+    </button>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
+    <script>
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+      }
+
+      // Set theme on load
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+
+      //market
+      // Application State
+      const state = {
+        web3: null,
+        contract: null,
+        account: null,
+        isConnected: false,
+        insightCount: 0,
+        insights: [],
+        myCreatedInsights: [],
+        myPurchasedInsights: [],
+        currentPage: 1,
+        itemsPerPage: 9,
+        selectedInsight: null,
+        industryFilters: new Set(),
+        currentFilter: "",
+        searchQuery: "",
+        purchasedIds: new Set(),
+      };
+
+      // Contract Address
+      const CONTRACT_ADDRESS = "0xf1620709eb1818ea618465643685c34d40e75c5a";
+
+      // Contract ABI from provided JSON
+      const CONTRACT_ABI = [
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "provider",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "industry",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "title",
+              type: "string",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+          ],
+          name: "InsightCreated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "buyer",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "seller",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+          ],
+          name: "InsightPurchased",
+          type: "event",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_industry",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_title",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "_description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "_price",
+              type: "uint256",
+            },
+          ],
+          name: "createInsight",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_insightId",
+              type: "uint256",
+            },
+          ],
+          name: "getInsight",
+          outputs: [
+            {
+              internalType: "address",
+              name: "provider",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "industry",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "title",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "insightCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "insights",
+          outputs: [
+            {
+              internalType: "address",
+              name: "provider",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "industry",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "title",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "price",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "timestamp",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_insightId",
+              type: "uint256",
+            },
+          ],
+          name: "purchaseInsight",
+          outputs: [],
+          stateMutability: "payable",
+          type: "function",
+        },
+      ];
+
+      // DOM Elements
+      const connectWalletBtn = document.getElementById("connect-wallet");
+      const connectionStatus = document.getElementById("connection-status");
+      const accountAddress = document.getElementById("account-address");
+      const insightsContainer = document.getElementById("insights-container");
+      const createInsightForm = document.getElementById("create-insight-form");
+      const industryFilter = document.getElementById("industry-filter");
+      const searchInput = document.getElementById("search-insights");
+      const prevPageBtn = document.getElementById("prev-page");
+      const nextPageBtn = document.getElementById("next-page");
+      const pageInfo = document.getElementById("page-info");
+      const createdInsightsContainer = document.getElementById(
+        "created-insights-container"
+      );
+      const purchasedInsightsContainer = document.getElementById(
+        "purchased-insights-container"
+      );
+      const modal = document.getElementById("insight-details-modal");
+      const closeModal = document.querySelector(".close");
+      const modalTitle = document.getElementById("modal-insight-title");
+      const modalIndustry = document.getElementById("modal-insight-industry");
+      const modalProvider = document.getElementById("modal-insight-provider");
+      const modalPrice = document.getElementById("modal-insight-price");
+      const modalTimestamp = document.getElementById("modal-insight-timestamp");
+      const modalDescription = document.getElementById(
+        "modal-insight-description"
+      );
+      const purchaseBtn = document.getElementById("purchase-insight-btn");
+      const toast = document.getElementById("toast");
+
+      // Initialize Application
+      async function initApp() {
+        // Setup event listeners
+        setupEventListeners();
+
+        // Check if Web3 is already injected
+        if (window.ethereum) {
+          try {
+            state.web3 = new Web3(window.ethereum);
+
+            // Check if already connected
+            const accounts = await state.web3.eth.getAccounts();
+            if (accounts && accounts.length > 0) {
+              await connectWallet();
+            }
+          } catch (error) {
+            console.error("Error initializing Web3:", error);
+            showToast("Failed to initialize Web3", "error");
+          }
+        } else {
+          showToast(
+            "Please install MetaMask to use this application",
+            "warning"
+          );
+        }
+      }
+
+      // Setup Event Listeners
+      function setupEventListeners() {
+        // Wallet connection
+        connectWalletBtn.addEventListener("click", connectWallet);
+
+        // Tab navigation
+        const tabBtns = document.querySelectorAll(".tab-btn");
+        tabBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const tabName = btn.getAttribute("data-tab");
+            changeTab(tabName, btn, ".tab-btn", ".tab-content");
+          });
+        });
+
+        // Sub-tab navigation
+        const subTabBtns = document.querySelectorAll(".sub-tab-btn");
+        subTabBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const subTabName = btn.getAttribute("data-subtab");
+            changeTab(subTabName, btn, ".sub-tab-btn", ".sub-tab-content");
+          });
+        });
+
+        // Form submission
+        createInsightForm.addEventListener("submit", handleCreateInsight);
+
+        // Filters
+        industryFilter.addEventListener("change", updateFilters);
+        searchInput.addEventListener("input", updateFilters);
+
+        // Pagination
+        prevPageBtn.addEventListener("click", () => changePage(-1));
+        nextPageBtn.addEventListener("click", () => changePage(1));
+
+        // Modal
+        closeModal.addEventListener(
+          "click",
+          () => (modal.style.display = "none")
+        );
+        window.addEventListener("click", (e) => {
+          if (e.target === modal) modal.style.display = "none";
+        });
+
+        // Purchase button
+        purchaseBtn.addEventListener("click", handlePurchaseInsight);
+
+        // Metamask account change
+        if (window.ethereum) {
+          window.ethereum.on("accountsChanged", async (accounts) => {
+            if (accounts.length === 0) {
+              // User logged out
+              disconnectWallet();
+            } else {
+              // Account changed
+              state.account = accounts[0];
+              updateUI();
+              await loadInsights();
+            }
+          });
+
+          // Network change
+          window.ethereum.on("chainChanged", () => {
+            window.location.reload();
+          });
+        }
+      }
+
+      // Connect Wallet
+      async function connectWallet() {
+        try {
+          // Request account access
+          const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+          });
+          state.account = accounts[0];
+          state.isConnected = true;
+
+          // Initialize contract
+          state.contract = new state.web3.eth.Contract(
+            CONTRACT_ABI,
+            CONTRACT_ADDRESS
+          );
+
+          // Update UI
+          updateUI();
+
+          // Load insights
+          await loadInsights();
+
+          // Subscribe to events
+          subscribeToEvents();
+
+          showToast("Wallet connected successfully!", "success");
+        } catch (error) {
+          console.error("Error connecting wallet:", error);
+          showToast("Failed to connect wallet", "error");
+        }
+      }
+
+      // Disconnect Wallet
+      function disconnectWallet() {
+        state.account = null;
+        state.isConnected = false;
+        state.contract = null;
+        updateUI();
+        showToast("Wallet disconnected", "info");
+      }
+
+      // Update UI based on connection state
+      function updateUI() {
+        if (state.isConnected) {
+          connectionStatus.textContent = "Connected";
+          connectionStatus.classList.add("connected");
+          connectWalletBtn.textContent = "Disconnect";
+          connectWalletBtn.removeEventListener("click", connectWallet);
+          connectWalletBtn.addEventListener("click", disconnectWallet);
+          accountAddress.textContent = shortenAddress(state.account);
+        } else {
+          connectionStatus.textContent = "Not Connected";
+          connectionStatus.classList.remove("connected");
+          connectWalletBtn.textContent = "Connect Wallet";
+          connectWalletBtn.removeEventListener("click", disconnectWallet);
+          connectWalletBtn.addEventListener("click", connectWallet);
+          accountAddress.textContent = "";
+
+          // Clear containers
+          insightsContainer.innerHTML = "";
+          createdInsightsContainer.innerHTML = "";
+          purchasedInsightsContainer.innerHTML = "";
+        }
+      }
+
+      // Subscribe to Contract Events
+      function subscribeToEvents() {
+        if (!state.contract) return;
+
+        // Listen for InsightCreated events
+        state.contract.events
+          .InsightCreated()
+          .on("data", async (event) => {
+            const { id, provider, industry, title, price } = event.returnValues;
+            showToast(`New insight created: ${title}`, "info");
+            await loadInsights();
+          })
+          .on("error", console.error);
+
+        // Listen for InsightPurchased events
+        state.contract.events
+          .InsightPurchased()
+          .on("data", async (event) => {
+            const { id, buyer, seller, price } = event.returnValues;
+            if (buyer.toLowerCase() === state.account.toLowerCase()) {
+              showToast("Purchase successful!", "success");
+              state.purchasedIds.add(parseInt(id));
+              await loadMyInsights();
+            }
+          })
+          .on("error", console.error);
+      }
+
+      // Load all insights from the contract
+      async function loadInsights() {
+        if (!state.contract) return;
+
+        try {
+          // Get total insight count
+          const count = await state.contract.methods.insightCount().call();
+          state.insightCount = parseInt(count);
+
+          // Clear existing insights
+          state.insights = [];
+          state.industryFilters.clear();
+
+          // Load all insights
+          for (let i = 1; i <= state.insightCount; i++) {
+            const insight = await state.contract.methods.getInsight(i).call();
+
+            // Add id to the insight object
+            insight.id = i;
+
+            // Add to insights array
+            state.insights.push(insight);
+
+            // Add industry to filters
+            if (insight.industry && insight.industry.trim() !== "") {
+              state.industryFilters.add(insight.industry);
+            }
+          }
+
+          // Update industry filter dropdown
+          updateIndustryFilterOptions();
+
+          // Display insights
+          renderInsights();
+
+          // Load insights related to current user
+          await loadMyInsights();
+        } catch (error) {
+          console.error("Error loading insights:", error);
+          showToast("Failed to load insights", "error");
+        }
+      }
+
+      // Load insights created by or purchased by the current user
+      async function loadMyInsights() {
+        if (!state.contract || !state.account) return;
+
+        try {
+          // Clear existing user insights
+          state.myCreatedInsights = [];
+          state.myPurchasedInsights = [];
+
+          // Filter created insights
+          state.myCreatedInsights = state.insights.filter(
+            (insight) =>
+              insight.provider.toLowerCase() === state.account.toLowerCase()
+          );
+
+          // Load purchased insights
+          // Note: This is simplified - in a real app, you might need a separate mapping in the contract
+          // to track purchases by user
+          const events = await state.contract.getPastEvents(
+            "InsightPurchased",
+            {
+              filter: { buyer: state.account },
+              fromBlock: 0,
+              toBlock: "latest",
+            }
+          );
+
+          // Extract purchased insight IDs
+          const purchasedIds = events.map((event) =>
+            parseInt(event.returnValues.id)
+          );
+          state.purchasedIds = new Set(purchasedIds);
+
+          // Get full insight data for purchased insights
+          for (const id of purchasedIds) {
+            const insight = state.insights.find((i) => parseInt(i.id) === id);
+            if (insight) state.myPurchasedInsights.push(insight);
+          }
+
+          // Render user insights
+          renderMyInsights();
+        } catch (error) {
+          console.error("Error loading user insights:", error);
+          showToast("Failed to load your insights", "error");
+        }
+      }
+
+      // Update industry filter dropdown options
+      function updateIndustryFilterOptions() {
+        // Clear existing options (except "All Industries")
+        while (industryFilter.options.length > 1) {
+          industryFilter.remove(1);
+        }
+
+        // Add industry options
+        state.industryFilters.forEach((industry) => {
+          const option = document.createElement("option");
+          option.value = industry;
+          option.textContent = industry;
+          industryFilter.appendChild(option);
+        });
+      }
+
+      // Render all insights with pagination and filtering
+      function renderInsights() {
+        insightsContainer.innerHTML = "";
+
+        // Apply filters
+        const filteredInsights = state.insights.filter((insight) => {
+          // Check industry filter
+          const industryMatch =
+            state.currentFilter === "" ||
+            insight.industry === state.currentFilter;
+
+          // Check search query
+          const searchMatch =
+            state.searchQuery === "" ||
+            insight.title
+              .toLowerCase()
+              .includes(state.searchQuery.toLowerCase());
+
+          return industryMatch && searchMatch;
+        });
+
+        // Calculate pagination
+        const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+        const endIndex = Math.min(
+          startIndex + state.itemsPerPage,
+          filteredInsights.length
+        );
+        const paginatedInsights = filteredInsights.slice(startIndex, endIndex);
+
+        // Update pagination UI
+        pageInfo.textContent = `Page ${state.currentPage} of ${Math.max(
+          1,
+          Math.ceil(filteredInsights.length / state.itemsPerPage)
+        )}`;
+        prevPageBtn.disabled = state.currentPage === 1;
+        nextPageBtn.disabled = endIndex >= filteredInsights.length;
+
+        // No insights to display
+        if (paginatedInsights.length === 0) {
+          insightsContainer.innerHTML =
+            '<p class="no-results">No insights found matching your filters</p>';
+          return;
+        }
+
+        // Render each insight card
+        paginatedInsights.forEach((insight) => {
+          const insightCard = createInsightCard(insight);
+          insightsContainer.appendChild(insightCard);
+        });
+      }
+
+      // Render user-specific insights
+      function renderMyInsights() {
+        // Render created insights
+        createdInsightsContainer.innerHTML = "";
+        if (state.myCreatedInsights.length === 0) {
+          createdInsightsContainer.innerHTML =
+            '<p class="no-results">You haven\'t created any insights yet</p>';
+        } else {
+          state.myCreatedInsights.forEach((insight) => {
+            const insightCard = createInsightCard(insight);
+            createdInsightsContainer.appendChild(insightCard);
+          });
+        }
+
+        // Render purchased insights
+        purchasedInsightsContainer.innerHTML = "";
+        if (state.myPurchasedInsights.length === 0) {
+          purchasedInsightsContainer.innerHTML =
+            '<p class="no-results">You haven\'t purchased any insights yet</p>';
+        } else {
+          state.myPurchasedInsights.forEach((insight) => {
+            const insightCard = createInsightCard(insight);
+            purchasedInsightsContainer.appendChild(insightCard);
+          });
+        }
+      }
+
+      // Create insight card element
+      function createInsightCard(insight) {
+        const card = document.createElement("div");
+        card.className = "insight-card";
+
+        // Format price from wei to ETH
+        const priceInEth = state.web3.utils.fromWei(
+          insight.price.toString(),
+          "ether"
+        );
+
+        // Format timestamp to date
+        const date = new Date(insight.timestamp * 1000);
+        const formattedDate = date.toLocaleDateString();
+
+        // Create card content
+        card.innerHTML = `
+        <h3 class="insight-title">${insight.title}</h3>
+        <span class="insight-industry">${insight.industry}</span>
+        <p class="insight-price">${priceInEth} ETH</p>
+        <p class="insight-provider">By: ${shortenAddress(insight.provider)}</p>
+        <p class="insight-date">Created: ${formattedDate}</p>
+    `;
+
+        // Add click event to show details modal
+        card.addEventListener("click", () => {
+          state.selectedInsight = insight;
+          openInsightModal(insight);
+        });
+
+        return card;
+      }
+
+      // Open insight details modal
+      function openInsightModal(insight) {
+        modalTitle.textContent = insight.title;
+        modalIndustry.textContent = insight.industry;
+        modalProvider.textContent = shortenAddress(insight.provider);
+        modalPrice.textContent = state.web3.utils.fromWei(
+          insight.price.toString(),
+          "ether"
+        );
+
+        // Format timestamp
+        const date = new Date(insight.timestamp * 1000);
+        modalTimestamp.textContent = date.toLocaleString();
+
+        // Check if the user has already purchased the insight
+        const hasAccess =
+          state.purchasedIds.has(parseInt(insight.id)) ||
+          insight.provider.toLowerCase() === state.account.toLowerCase();
+
+        // Show or hide description based on purchase status
+        if (hasAccess) {
+          modalDescription.textContent = insight.description;
+          purchaseBtn.style.display = "none";
+        } else {
+          modalDescription.textContent =
+            "Purchase this insight to view the complete description.";
+          purchaseBtn.style.display = "block";
+        }
+
+        // Show the modal
+        modal.style.display = "block";
+      }
+
+      // Handle creating a new insight
+      async function handleCreateInsight(e) {
+        e.preventDefault();
+
+        if (!state.isConnected) {
+          showToast("Please connect your wallet first", "warning");
+          return;
+        }
+
+        // Get form values
+        const industry = document.getElementById("industry").value;
+        const title = document.getElementById("title").value;
+        const description = document.getElementById("description").value;
+        const price = document.getElementById("price").value;
+
+        // Convert price to wei
+        const priceInWei = state.web3.utils.toWei(price, "ether");
+
+        try {
+          // Send transaction to create insight
+          await state.contract.methods
+            .createInsight(industry, title, description, priceInWei)
+            .send({ from: state.account });
+
+          // Reset form
+          createInsightForm.reset();
+
+          // Switch to browse tab
+          const browseTabBtn = document.querySelector('[data-tab="browse"]');
+          changeTab("browse", browseTabBtn, ".tab-btn", ".tab-content");
+
+          showToast("Insight created successfully!", "success");
+        } catch (error) {
+          console.error("Error creating insight:", error);
+          showToast("Failed to create insight", "error");
+        }
+      }
+
+      // Handle purchasing an insight
+      async function handlePurchaseInsight() {
+        if (!state.isConnected || !state.selectedInsight) {
+          return;
+        }
+
+        try {
+          // Get insight price
+          const price = state.selectedInsight.price;
+          const insightId = state.selectedInsight.id;
+
+          // Send transaction to purchase insight
+          await state.contract.methods
+            .purchaseInsight(insightId)
+            .send({ from: state.account, value: price });
+
+          // Close modal and refresh
+          modal.style.display = "none";
+        } catch (error) {
+          console.error("Error purchasing insight:", error);
+          showToast("Failed to purchase insight", "error");
+        }
+      }
+
+      // Update filters and render insights
+      function updateFilters() {
+        state.currentFilter = industryFilter.value;
+        state.searchQuery = searchInput.value;
+        state.currentPage = 1; // Reset to first page
+        renderInsights();
+      }
+
+      // Change page
+      function changePage(direction) {
+        state.currentPage += direction;
+        if (state.currentPage < 1) state.currentPage = 1;
+        renderInsights();
+      }
+
+      // Change active tab
+      function changeTab(tabName, activeBtn, btnSelector, contentSelector) {
+        // Update active button
+        document.querySelectorAll(btnSelector).forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        activeBtn.classList.add("active");
+
+        // Show active content
+        document.querySelectorAll(contentSelector).forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.getElementById(tabName).classList.add("active");
+      }
+
+      // Show toast notification
+      function showToast(message, type = "info") {
+        toast.textContent = message;
+        toast.className = "toast"; // Reset classes
+        toast.classList.add(type);
+        toast.style.display = "block";
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
+
+      // Helper to shorten Ethereum addresses
+      function shortenAddress(address) {
+        return `${address.substring(0, 6)}...${address.substring(
+          address.length - 4
+        )}`;
+      }
+
+      // Initialize the application when the DOM is loaded
+      document.addEventListener("DOMContentLoaded", initApp);
+    </script>
+  </body>
+</html>
