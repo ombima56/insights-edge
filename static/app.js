@@ -287,6 +287,7 @@ function setupEventListeners() {
     // Wallet connection
     connectWalletBtn.addEventListener('click', connectWallet);
     
+    
     // Tab navigation
     const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
@@ -346,24 +347,34 @@ function setupEventListeners() {
     }
 }
 
-// Connect Wallet
 async function connectWallet() {
     try {
+        if (!state.web3) {
+            if (window.ethereum) {
+                state.web3 = new Web3(window.ethereum);
+            } else {
+                showToast('Please install MetaMask to use this application', 'warning');
+                return;
+            }
+        }
+
         // Request account access
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        if (!accounts || accounts.length === 0) {
+            showToast('No accounts found. Please unlock MetaMask.', 'error');
+            return;
+        }
+
         state.account = accounts[0];
         state.isConnected = true;
-        
+
         // Initialize contract
         state.contract = new state.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        
+
         // Update UI
         updateUI();
-        
-        // Load insights
         await loadInsights();
-        
-        // Subscribe to events
         subscribeToEvents();
         
         showToast('Wallet connected successfully!', 'success');
@@ -372,6 +383,7 @@ async function connectWallet() {
         showToast('Failed to connect wallet', 'error');
     }
 }
+
 
 // Disconnect Wallet
 function disconnectWallet() {
@@ -749,18 +761,19 @@ function changeTab(tabName, activeBtn, btnSelector, contentSelector) {
     document.getElementById(tabName).classList.add('active');
 }
 
-// Show toast notification
 function showToast(message, type = 'info') {
+    if (!toast) {
+        console.error('Toast element not found');
+        return;
+    }
     toast.textContent = message;
-    toast.className = 'toast'; // Reset classes
-    toast.classList.add(type);
+    toast.className = `toast ${type}`;
     toast.style.display = 'block';
-    
-    // Hide after 3 seconds
     setTimeout(() => {
         toast.style.display = 'none';
     }, 3000);
 }
+
 
 // Helper to shorten Ethereum addresses
 function shortenAddress(address) {
