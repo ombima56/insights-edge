@@ -347,43 +347,6 @@ function setupEventListeners() {
     }
 }
 
-// Connect Wallet
-// async function connectWallet() {
-//     try {
-//         if (!state.web3) {
-//             if (window.ethereum) {
-//                 state.web3 = new Web3(window.ethereum);
-//             } else {
-//                 showToast('Please install MetaMask to use this application', 'warning');
-//                 return;
-//             }
-//         }
-//         // Request account access
-//         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-//         state.account = accounts[0];
-//         state.isConnected = true;
-//         // Initialize contract
-//         console.log('wallet found');
-//         console.log(state.account);
-
-//         state.contract = new state.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        
-//         // Update UI
-//         updateUI();
-        
-//         // Load insights
-//         await loadInsights();
-        
-//         // Subscribe to events
-//         subscribeToEvents();
-        
-//         showToast('Wallet connected successfully!', 'success');
-//     } catch (error) {
-//         console.error('Error connecting wallet:', error);
-//         showToast('Failed to connect wallet', 'error');
-//     }
-// }
-
 async function connectWallet() {
     try {
         if (!state.web3) {
@@ -394,7 +357,6 @@ async function connectWallet() {
                 return;
             }
         }
-        console.log('Connecting wallet...');
 
         // Request account access
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -407,7 +369,6 @@ async function connectWallet() {
         state.account = accounts[0];
         state.isConnected = true;
 
-        console.log('Connected account:', state.account);
         // Initialize contract
         state.contract = new state.web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
 
@@ -800,23 +761,6 @@ function changeTab(tabName, activeBtn, btnSelector, contentSelector) {
     document.getElementById(tabName).classList.add('active');
 }
 
-// Show toast notification
-// function showToast(message, type = 'info') {
-//     if (!toast) {
-//         console.error('Toast element not found');
-//         return;
-//     }
-
-//     toast.textContent = message;
-//     toast.className = 'toast'; // Reset classes
-//     toast.classList.add(type);
-//     toast.style.display = 'block';
-    
-//     // Hide after 3 seconds
-//     setTimeout(() => {
-//         toast.style.display = 'none';
-//     }, 3000);
-// }
 function showToast(message, type = 'info') {
     if (!toast) {
         console.error('Toast element not found');
