@@ -1093,3 +1093,83 @@ footer {
     transform: rotate(360deg);
   }
 }
+
+/* Minimal Landing Page Styles */
+.minimal-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.minimal-hero {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+.minimal-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.minimal-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.minimal-cta {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.minimal-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+}
+
+.minimal-btn.primary {
+  background: var(--primary);
+  color: white;
+}
+
+.minimal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.minimal-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.minimal-feature {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.minimal-feature h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.minimal-feature p {
+  color: var(--text-secondary);
+}
