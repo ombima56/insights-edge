@@ -7,6 +7,7 @@ import (
 
 	"github.com/ombima56/insights-edge/backend/database"
 	"github.com/ombima56/insights-edge/backend/models"
+	"github.com/ombima56/insights-edge/backend/utils"
 )
 
 type MarketInsight struct {
@@ -23,12 +24,16 @@ type PageData struct {
 	IsAuthenticated bool
 	User            *models.User
 	Insights        []MarketInsight
+	FlashMessages   []utils.FlashMessage
 }
 
-func renderTemplate(w http.ResponseWriter, tmpl string, data *PageData) {
+func renderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, data *PageData) {
 	if data == nil {
 		data = &PageData{}
 	}
+
+	// Get flash messages and add them to the data
+	data.FlashMessages = utils.GetFlashMessages(r, w)
 
 	files := []string{
 		filepath.Join("frontend", "templates", "layout.html"),
@@ -57,13 +62,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		Title:           "Home",
 		IsAuthenticated: isAuthenticated(r),
 	}
-	renderTemplate(w, "home", data)
+	renderTemplate(w, r, "home", data)
 }
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	user := getCurrentUser(r)
 	if user == nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		utils.AddFlashMessage(w, r, "error", "You must be logged in to access the dashboard")
 		return
 	}
 
@@ -75,6 +81,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 	if err != nil {
 		http.Error(w, "Server error", http.StatusInternalServerError)
+		utils.AddFlashMessage(w, r, "error", "Failed to fetch insights")
 		return
 	}
 	defer rows.Close()
@@ -94,7 +101,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		User:            user,
 		Insights:        insights,
 	}
-	renderTemplate(w, "dashboard", data)
+	renderTemplate(w, r, "dashboard", data)
 }
 
 func getCurrentUser(r *http.Request) *models.User {
