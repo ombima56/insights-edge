@@ -6,12 +6,12 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/ombima56/insights-edge/backend/database"
 	"github.com/ombima56/insights-edge/backend/handlers"
 	"github.com/ombima56/insights-edge/backend/repository"
 	"github.com/ombima56/insights-edge/backend/routes"
 	"github.com/ombima56/insights-edge/backend/service"
+	"github.com/ombima56/insights-edge/backend/utils"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 		}
 	}()
 
-	store := sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+	utils.InitSessionStore([]byte(os.Getenv("SESSION_KEY")))
 
 	userRepository := repository.NewUserRepository(database.DB)
 	insightRepository := repository.NewInsightRepository(database.DB)
@@ -33,12 +33,12 @@ func main() {
 	userService := service.NewUserService(userRepository)
 	insightService := service.NewInsightService(insightRepository, userRepository)
 
-	authHandler := handlers.NewAuthHandler(userService, store)
+	authHandler := handlers.NewAuthHandler(userService, utils.SessionStore)
 	insightHandler := handlers.NewInsightHandler(insightService)
 
 	r := mux.NewRouter()
 
-	routes.SetupRoutes(r, authHandler, insightHandler, store)
+	routes.SetupRoutes(r, authHandler, insightHandler, utils.SessionStore)
 
 	srv := &http.Server{
 		Addr:    ":9000",
