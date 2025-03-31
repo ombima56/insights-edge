@@ -15,8 +15,9 @@ func SetupRoutes(r *mux.Router, authHandler *handlers.AuthHandler, insightHandle
 
 	// Public routes
 	r.HandleFunc("/", handlers.HomeHandler).Methods("GET")
-	r.HandleFunc("/register", authHandler.RegisterUser).Methods("POST")
-	r.HandleFunc("/login", authHandler.LoginUser).Methods("POST")
+	r.HandleFunc("/register", handlers.RegisterHandler).Methods("GET")
+	r.HandleFunc("/api/auth/register", authHandler.RegisterUser).Methods("POST")
+	r.HandleFunc("/api/auth/login", authHandler.LoginUser).Methods("POST")
 
 	// Protected routes
 	protected := r.PathPrefix("/api").Subrouter()
