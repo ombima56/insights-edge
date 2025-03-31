@@ -34,7 +34,7 @@ func GetSession(r *http.Request) (*sessions.Session, error) {
 func AddFlashMessage(w http.ResponseWriter, r *http.Request, msgType, message string) {
 	session, err := GetSession(r)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Printf("Error getting session: %v", err)
 		return
 	}
 
@@ -52,7 +52,7 @@ func AddFlashMessage(w http.ResponseWriter, r *http.Request, msgType, message st
 	flashBytes, _ := json.Marshal(messages)
 	session.Values["flash_messages"] = string(flashBytes)
 	if err := session.Save(r, w); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		log.Printf("Error saving session: %v", err)
 	}
 }
 
@@ -69,6 +69,7 @@ func GetFlashMessages(r *http.Request, w http.ResponseWriter) []FlashMessage {
 		if err := json.Unmarshal([]byte(raw.(string)), &messages); err == nil {
 			delete(session.Values, "flash_messages")
 			if err := session.Save(r, w); err != nil {
+				log.Printf("Error saving session: %v", err)
 				return []FlashMessage{}
 			}
 		}
