@@ -14,7 +14,8 @@ const state = {
     industryFilters: new Set(),
     currentFilter: '',
     searchQuery: '',
-    purchasedIds: new Set()
+    purchasedIds: new Set(),
+    lastLoadTime: 0
 };
 
 // Contract Address 
@@ -287,18 +288,24 @@ function setupEventListeners() {
     // Wallet connection
     connectWalletBtn.addEventListener('click', connectWallet);
     
+    // Get tab buttons elements first
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const subTabBtns = document.querySelectorAll('.sub-tab-btn');
     
     // Tab navigation
-    const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const tabName = btn.getAttribute('data-tab');
             changeTab(tabName, btn, '.tab-btn', '.tab-content');
+            
+            // Force load data if it's the first time clicking this tab
+            if (tabName === 'browse' && state.insights.length === 0) {
+                loadInsights();
+            }
         });
     });
     
     // Sub-tab navigation
-    const subTabBtns = document.querySelectorAll('.sub-tab-btn');
     subTabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const subTabName = btn.getAttribute('data-subtab');
@@ -449,6 +456,9 @@ async function loadInsights() {
     if (!state.contract) return;
     
     try {
+        // Show loading state
+        insightsContainer.innerHTML = '<div class="loading">Loading insights...</div>';
+        
         // Get total insight count
         const count = await state.contract.methods.insightCount().call();
         state.insightCount = parseInt(count);
@@ -483,6 +493,7 @@ async function loadInsights() {
         await loadMyInsights();
         
     } catch (error) {
+        insightsContainer.innerHTML = '<div class="error">Failed to load insights</div>';
         console.error('Error loading insights:', error);
         showToast('Failed to load insights', 'error');
     }
@@ -623,13 +634,18 @@ function createInsightCard(insight) {
     const date = new Date(insight.timestamp * 1000);
     const formattedDate = date.toLocaleDateString();
     
-    // Create card content
     card.innerHTML = `
-        <h3 class="insight-title">${insight.title}</h3>
-        <span class="insight-industry">${insight.industry}</span>
-        <p class="insight-price">${priceInEth} ETH</p>
-        <p class="insight-provider">By: ${shortenAddress(insight.provider)}</p>
-        <p class="insight-date">Created: ${formattedDate}</p>
+        <div class="insight-card-header">
+            <span class="insight-card-industry">${insight.industry}</span>
+        </div>
+        <div class="insight-card-body">
+            <h3 class="insight-card-title">${insight.title}</h3>
+            <p class="insight-card-description">Provider: ${shortenAddress(insight.provider)} • Created: ${formattedDate}</p>
+        </div>
+        <div class="insight-card-footer">
+            <div class="insight-card-price">${priceInEth} ETH</div>
+            <button class="view-insight-btn btn btn-primary">View Details</button>
+        </div>
     `;
     
     // Add click event to show details modal
@@ -757,8 +773,21 @@ function changeTab(tabName, activeBtn, btnSelector, contentSelector) {
     // Show active content
     document.querySelectorAll(contentSelector).forEach(content => {
         content.classList.remove('active');
+        if (content.id === tabName) {
+            content.classList.add('active');
+            // Load data when tab becomes active
+            if (tabName === 'browse') {
+                // Only load if we haven't already or if data might be stale
+                if (state.insights.length === 0 || 
+                    Date.now() - state.lastLoadTime > 30000) { // 30 second cache
+                    loadInsights();
+                    state.lastLoadTime = Date.now();
+                }
+            } else if (tabName === 'my-insights') {
+                loadMyInsights();
+            }
+        }
     });
-    document.getElementById(tabName).classList.add('active');
 }
 
 function showToast(message, type = 'info') {
