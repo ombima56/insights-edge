@@ -42,9 +42,11 @@ func (h *AuthHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.userService.RegisterUser(modelUser); err != nil {
 		utils.HandleError(w, err)
+		utils.AddFlashMessage(w, r, "error", "Failed to register user. Please check your input and try again.")
 		return
 	}
 
+	utils.AddFlashMessage(w, r, "success", "Registration successful! Please log in.")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 }
@@ -59,8 +61,9 @@ func (h *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	token, err := h.userService.LoginUser(login.Email, login.Password)
 	if err != nil {
 		if err == models.ErrInvalidCredentials {
-			utils.HandleError(w, err)
-			return
+			utils.AddFlashMessage(w, r, "error", "Invalid email or password")
+		} else {
+			utils.AddFlashMessage(w, r, "error", "Failed to log in. Please try again.")
 		}
 		utils.HandleError(w, err)
 		return
@@ -78,6 +81,7 @@ func (h *AuthHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	utils.AddFlashMessage(w, r, "success", "Successfully logged in!")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"token": token})
 }
@@ -87,5 +91,5 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Title:           "Register",
 		IsAuthenticated: isAuthenticated(r),
 	}
-	renderTemplate(w, "register", data)
+	renderTemplate(w, r, "register", data)
 }
