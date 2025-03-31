@@ -17,21 +17,35 @@
           window.location.href = "/";
         });
       }
+
+      // Display flash messages
+      window.addEventListener('DOMContentLoaded', (event) => {
+        const flashMessages = {{ .FlashMessages | jsonify }};
+        if (flashMessages && flashMessages.length > 0) {
+          const container = document.createElement('div');
+          container.className = 'flash-messages';
+          
+          flashMessages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flash-message ${msg.Type}`;
+            messageDiv.innerHTML = `
+              <div class="message-content">${msg.Message}</div>
+              <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            container.appendChild(messageDiv);
+          });
+
+          document.body.insertBefore(container, document.body.firstChild);
+
+          // Auto-remove messages after 5 seconds
+          setTimeout(() => {
+            container.remove();
+          }, 5000);
+        }
+      });
     </script>
   </head>
   <body>
-    <!-- Flash Messages -->
-    <div id="flash-messages" class="flash-messages">
-      {{range .FlashMessages}}
-      <div class="flash-message {{.Type}}">
-        <div class="message-content">
-          {{.Message}}
-        </div>
-        <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
-      </div>
-      {{end}}
-    </div>
-
     <nav class="navbar">
       <div class="container">
         <a href="/" class="logo">Insights Edge</a>
@@ -91,7 +105,7 @@
         html.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
       }
-  
+
       // Set theme on load
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
