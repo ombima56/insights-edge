@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -9,6 +10,8 @@ import (
 var DB *sql.DB
 
 func InitDB() error {
+	_ = os.Mkdir("db", 0755)
+
 	db, err := sql.Open("sqlite3", "./db/insights.db")
 	if err != nil {
 		return err
@@ -27,6 +30,7 @@ func InitDB() error {
 			last_name TEXT,
 			company_name TEXT,
 			industry TEXT,
+			account_type TEXT NOT NULL DEFAULT 'free',
 			created_at TEXT NOT NULL
 		)
 	`); err != nil {
