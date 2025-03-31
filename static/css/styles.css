@@ -251,13 +251,32 @@ button {
   margin-bottom: 2rem;
 }
 
+/* Loading and Error States */
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  grid-column: 1 / -1;
+  font-size: 1.1rem;
+}
+
 .insight-card {
-  background-color: var(--bg-primary);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-md);
-  transition: var(--transition);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 1;
+    visibility: visible;
+    transition: all 0.3s ease;
+    background-color: var(--bg-primary);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  grid-column: 1 / -1;
+  font-style: italic;
 }
 
 [data-theme="dark"] .insight-card {
