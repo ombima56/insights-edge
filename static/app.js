@@ -623,13 +623,18 @@ function createInsightCard(insight) {
     const date = new Date(insight.timestamp * 1000);
     const formattedDate = date.toLocaleDateString();
     
-    // Create card content
     card.innerHTML = `
-        <h3 class="insight-title">${insight.title}</h3>
-        <span class="insight-industry">${insight.industry}</span>
-        <p class="insight-price">${priceInEth} ETH</p>
-        <p class="insight-provider">By: ${shortenAddress(insight.provider)}</p>
-        <p class="insight-date">Created: ${formattedDate}</p>
+        <div class="insight-card-header">
+            <span class="insight-card-industry">${insight.industry}</span>
+        </div>
+        <div class="insight-card-body">
+            <h3 class="insight-card-title">${insight.title}</h3>
+            <p class="insight-card-description">Provider: ${shortenAddress(insight.provider)} • Created: ${formattedDate}</p>
+        </div>
+        <div class="insight-card-footer">
+            <div class="insight-card-price">${priceInEth} ETH</div>
+            <button class="view-insight-btn btn btn-primary">View Details</button>
+        </div>
     `;
     
     // Add click event to show details modal
