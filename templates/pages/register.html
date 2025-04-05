@@ -2,6 +2,9 @@
 <div class="auth-container">
   <div class="auth-card">
     <h2>Create Account</h2>
+    <div id="registerError" class="error-message" style="display: none">
+      <!-- Error message will be inserted here -->
+    </div>
     <form id="registerForm" onsubmit="handleRegister(event)">
       <div class="form-group">
         <label for="firstName">First Name</label>
@@ -74,6 +77,21 @@
 </div>
 
 <script>
+  // Function to show error message
+  function showError(message) {
+    const errorElement = document.getElementById("registerError");
+    errorElement.textContent = message;
+    errorElement.style.display = "block";
+    
+    // Scroll to error message
+    errorElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Automatically hide the error after 5 seconds
+    setTimeout(() => {
+      errorElement.style.display = "none";
+    }, 5000);
+  }
+
   // Handle account type selection
   document.querySelectorAll(".account-type-option").forEach((option) => {
     option.addEventListener("click", function () {
@@ -107,15 +125,18 @@
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
+    
+    // Hide any existing error messages
+    document.getElementById("registerError").style.display = "none";
 
     if (formData.get("password") !== formData.get("confirmPassword")) {
-      alert("Passwords do not match");
+      showError("Passwords do not match");
       return;
     }
 
     // Validate account type is selected
     if (!formData.get("accountType")) {
-      alert("Please select an account type");
+      showError("Please select an account type");
       return;
     }
 
@@ -148,11 +169,65 @@
         window.location.href = "/login?registered=true";
       } else {
         const data = await response.json();
-        alert(data.error || "Registration failed");
+        showError(data.error || "Registration failed");
       }
     } catch (error) {
-      alert("An error occurred. Please try again.");
+      showError("User with the same email exists. Please try again.");
     }
   }
 </script>
+
+<style>
+  .error-message {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    border-left: 4px solid #d32f2f;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Enhance account type selector */
+  .account-type-selector {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .account-type-option {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .account-type-option:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .account-type-option.active {
+    border-color: #4a90e2;
+    background-color: #eaf2fd;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  .account-type-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .account-type-label {
+    font-weight: 500;
+  }
+</style>
 {{end}}
