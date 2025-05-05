@@ -20,4 +20,22 @@ func InitRoutes() {
 	http.HandleFunc("/api/auth/login", handlers.LoginAPIHandler)
 	http.HandleFunc("/api/auth/register", handlers.RegisterAPIHandler)
 	http.HandleFunc("/api/auth/logout", handlers.LogoutHandler)
+
+	// Insights routes
+	http.HandleFunc("/api/insights/relevant", middleware.AuthMiddleware(handlers.GetRelevantInsightsHandler))
+	http.HandleFunc("/api/insights/business", middleware.AuthMiddleware(handlers.GetBusinessInsightsHandler))
+	http.HandleFunc("/api/insights", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			handlers.CreateInsightHandler(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+	http.HandleFunc("/api/insights/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPut {
+			handlers.UpdateInsightHandler(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
 }
