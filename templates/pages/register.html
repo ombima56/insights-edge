@@ -32,6 +32,18 @@
         </div>
         <input type="hidden" id="accountType" name="accountType" required />
       </div>
+      <div class="form-group individual-fields" style="display: none">
+        <label for="businessInterest">Business Interest</label>
+        <select id="businessInterest" name="businessInterest" class="form-select">
+          <option value="">Select business interest</option>
+          <option value="Technology">Technology</option>
+          <option value="Retail">Retail</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Finance">Finance</option>
+          <option value="Energy">Energy</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
       <div class="form-group business-fields" style="display: none">
         <label for="companyName">Company Name</label>
         <input type="text" id="companyName" name="companyName" />
@@ -153,6 +165,14 @@
     if (formData.get("accountType") === "business") {
       registrationData.companyName = formData.get("companyName");
       registrationData.industry = formData.get("industry");
+    } else {
+      registrationData.businessInterest = formData.get("businessInterest");
+      
+      // Validate business interest is selected for individual users
+      if (!formData.get("businessInterest")) {
+        showError("Please select a business interest");
+        return;
+      }
     }
 
     try {
