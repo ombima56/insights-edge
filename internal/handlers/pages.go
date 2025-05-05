@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 
@@ -13,6 +14,9 @@ type MarketInsight struct {
 	Industry    string  `json:"industry"`
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
+	Type        string  `json:"type"`
+	Content     string  `json:"content"`
+	UserID      int     `json:"user_id"`
 	TrendValue  float64 `json:"trend_value"`
 	CreatedAt   string  `json:"created_at"`
 }
@@ -68,11 +72,13 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 	var insights []MarketInsight
 	rows, err := database.DB.Query(`
-		SELECT id, industry, title, description, trend_value, created_at 
+		SELECT id, industry, title, description, type, content, user_id, trend_value, created_at 
 		FROM market_insights 
 		ORDER BY created_at DESC
 	`)
 	if err != nil {
+		// Log the specific error
+		log.Printf("Database query error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
@@ -80,11 +86,21 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var insight MarketInsight
-		err := rows.Scan(&insight.ID, &insight.Industry, &insight.Title, &insight.Description, &insight.TrendValue, &insight.CreatedAt)
+		err := rows.Scan(&insight.ID, &insight.Industry, &insight.Title, &insight.Description, 
+			&insight.Type, &insight.Content, &insight.UserID, &insight.TrendValue, &insight.CreatedAt)
 		if err != nil {
+			// Log the specific error
+			log.Printf("Row scan error: %v", err)
 			continue
 		}
 		insights = append(insights, insight)
+	}
+
+	// Check for errors from iterating over rows
+	if err = rows.Err(); err != nil {
+		log.Printf("Rows iteration error: %v", err)
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		return
 	}
 
 	data := &PageData{
