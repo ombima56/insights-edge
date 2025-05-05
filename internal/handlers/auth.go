@@ -11,14 +11,15 @@ import (
 )
 
 type User struct {
-	ID          int    `json:"id"`
-	Email       string `json:"email"`
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	AccountType string `json:"accountType"`
-	CompanyName string `json:"companyName,omitempty"`
-	Industry    string `json:"industry,omitempty"`
-	Password    string `json:"-"`
+    ID              int    `json:"id"`
+    Email           string `json:"email"`
+    FirstName       string `json:"firstName"`
+    LastName        string `json:"lastName"`
+    AccountType     string `json:"accountType"`
+    CompanyName     string `json:"companyName,omitempty"`
+    Industry        string `json:"industry,omitempty"`
+    BusinessInterest string `json:"businessInterest,omitempty"`
+    Password        string `json:"-"`
 }
 
 type LoginRequest struct {
