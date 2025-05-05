@@ -101,6 +101,108 @@
 
     <div id="toast" class="toast"></div>
 
+    <div class="dashboard-section" id="insights-section">
+      <div class="section-header">
+        <h2>Market Insights</h2>
+        <div class="section-actions" id="business-actions" style="display: none;">
+          <button id="create-insight-btn" class="btn btn-primary">Create New Insight</button>
+        </div>
+      </div>
+      
+      <div id="insights-container" class="insights-grid">
+        <!-- Insights will be loaded here -->
+        <div class="loading">Loading insights...</div>
+      </div>
+    </div>
+
+    <div id="create-insight-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Create New Insight</h2>
+        <form id="create-insight-form">
+          <div class="form-group">
+            <label for="insight-title">Title</label>
+            <input type="text" id="insight-title" name="title" required>
+          </div>
+          <div class="form-group">
+            <label for="insight-industry">Industry</label>
+            <select id="insight-industry" name="industry" required>
+              <option value="">Select Industry</option>
+              <option value="Technology">Technology</option>
+              <option value="Retail">Retail</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Finance">Finance</option>
+              <option value="Energy">Energy</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="insight-type">Type</label>
+            <select id="insight-type" name="type" required>
+              <option value="">Select Type</option>
+              <option value="Market Trend">Market Trend</option>
+              <option value="Competitive Analysis">Competitive Analysis</option>
+              <option value="Consumer Behavior">Consumer Behavior</option>
+              <option value="Industry Report">Industry Report</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="insight-description">Description</label>
+            <textarea id="insight-description" name="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="insight-content">Content</label>
+            <textarea id="insight-content" name="content" required rows="6"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Create Insight</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="edit-insight-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Insight</h2>
+        <form id="edit-insight-form">
+          <input type="hidden" id="edit-insight-id">
+          <div class="form-group">
+            <label for="edit-insight-title">Title</label>
+            <input type="text" id="edit-insight-title" name="title" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-insight-industry">Industry</label>
+            <select id="edit-insight-industry" name="industry" required>
+              <option value="">Select Industry</option>
+              <option value="Technology">Technology</option>
+              <option value="Retail">Retail</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Finance">Finance</option>
+              <option value="Energy">Energy</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-insight-type">Type</label>
+            <select id="edit-insight-type" name="type" required>
+              <option value="">Select Type</option>
+              <option value="Market Trend">Market Trend</option>
+              <option value="Competitive Analysis">Competitive Analysis</option>
+              <option value="Consumer Behavior">Consumer Behavior</option>
+              <option value="Industry Report">Industry Report</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-insight-description">Description</label>
+            <textarea id="edit-insight-description" name="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="edit-insight-content">Content</label>
+            <textarea id="edit-insight-content" name="content" required rows="6"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Insight</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
