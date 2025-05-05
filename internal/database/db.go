@@ -47,15 +47,25 @@ func InitDB() error {
 		return err
 	}
 
+	// Drop market_insights table if it exists
+	_, err = DB.Exec(`DROP TABLE IF EXISTS market_insights`)
+	if err != nil {
+		return err
+	}
+
 	// Create market_insights table
 	_, err = DB.Exec(`
 		CREATE TABLE IF NOT EXISTS market_insights (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			industry TEXT NOT NULL,
 			title TEXT NOT NULL,
-			description TEXT NOT NULL,
-			trend_value REAL,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			description TEXT,
+			type TEXT NOT NULL,
+			content TEXT NOT NULL,
+			user_id INTEGER NOT NULL,
+			trend_value REAL DEFAULT 0,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(id)
 		)
 	`)
 	if err != nil {
